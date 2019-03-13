@@ -1,0 +1,29 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# genderedstreetnames
+
+The goal of `genderedstreetnames` is to automatically find the gender of street names, manually fix what the automatic part got wrong.
+
+This is a work in progress, more details soon. 
+
+## Installation
+
+This package is currently available on GitHub. 
+
+
+``` r
+remotes::install_github("giocomai/genderedstreetnames")
+```
+
