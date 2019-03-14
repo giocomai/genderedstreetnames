@@ -8,7 +8,9 @@ app_ui <- function() {
     golem::favicon(),
     # List the first level UI elements here 
     fluidPage(
-      h1("genderedstreetnames")
+      h1("genderedstreetnames"),
+      mod_select_dataset_ui("select_dataset_ui_1")
+      #shiny::textOutput(outputId = "current_folder")
     )
   )
 }
