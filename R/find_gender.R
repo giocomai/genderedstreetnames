@@ -1,7 +1,10 @@
-#' Find if a string refers to a person, and if so, finds gender 
+#' Find if a string refers to a person, and if so, finds gender by searching Wikidata
 #' 
 #' @param search The query to be searched.
 #' @param language Two letters language codes to be passed to WikiData
+#' @param cache Logical, defaults to TRUE. IF TRUE, it stores data on the search string and the resulting Wikidata object. Data are stored inside a `wikidata` folder (if it does not exist, it is automatically created).
+#' @param wait Numeric, defaults to 0.1. Waiting time between queries, relevant when making a large number of queries. 
+#' @param exclude_without_uppercase Logical, degaults to TRUE. If the search string does not include any upper case letter, then assume it's not a person.
 #' @return A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID
 #' @examples
 #' 
@@ -11,15 +14,23 @@
 #' 
 
 
-FindGender <- function(search, language = "en", cache = TRUE, wait = 1) {
-  dir.create(path = "wikidata", showWarnings = FALSE)
-  dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
-  dir.create(path = file.path("wikidata", "search", language), showWarnings = FALSE)
-  dir.create(path = file.path("wikidata", "item"), showWarnings = FALSE)
+FindGender <- function(search, language = "en", cache = TRUE, wait = 0.1, exclude_without_uppercase = TRUE) {
+  # If no capital letters, just say it's not a person
+  if (exclude_without_uppercase==TRUE&stringr::str_detect(string = search, pattern = stringr::regex(pattern = "\\p{Lu}"))==FALSE) {
+    return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA)) 
+  }
+  
+  if (cache==TRUE) {
+    dir.create(path = "wikidata", showWarnings = FALSE)
+    dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
+    dir.create(path = file.path("wikidata", "search", language), showWarnings = FALSE)
+    dir.create(path = file.path("wikidata", "item"), showWarnings = FALSE)
+  }
   # search term
   search_response_location <- file.path("wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
   if (file.exists(search_response_location)==FALSE) {
-    search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) return(tibble::tibble(Query = search, Gender = NA, Description = NA, WikidataID = NA)))
+    search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) warning(e))
+    if (is.null(search_response)) (return(NULL))
     saveRDS(object = search_response, file = search_response_location)
   } else {
     search_response <- readRDS(file = search_response_location)
@@ -63,6 +74,6 @@ FindGender <- function(search, language = "en", cache = TRUE, wait = 1) {
       return(tibble::tibble(Query = search, Gender = as.character(gender), Description = description, WikidataID = item[[1]]$id))
     }
   }
-  return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA))
   warning(paste("No Wikidata entry matches search", dQuote(search)))
+  return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA))
 }
