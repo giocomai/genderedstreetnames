@@ -5,7 +5,7 @@
 \title{Find if a string refers to a person, and if so, finds gender by searching Wikidata}
 \usage{
 FindGender(search, language = "en", cache = TRUE, wait = 0.1,
-  exclude_without_uppercase = TRUE)
+  only_cached = FALSE, exclude_without_uppercase = TRUE)
 }
 \arguments{
 \item{search}{The query to be searched.}
@@ -15,6 +15,8 @@ FindGender(search, language = "en", cache = TRUE, wait = 0.1,
 \item{cache}{Logical, defaults to TRUE. IF TRUE, it stores data on the search string and the resulting Wikidata object. Data are stored inside a `wikidata` folder (if it does not exist, it is automatically created).}
 
 \item{wait}{Numeric, defaults to 0.1. Waiting time between queries, relevant when making a large number of queries.}
+
+\item{only_cached}{Logical, defaults to FALSE. If TRUE, it only uses locally cached information.}
 
 \item{exclude_without_uppercase}{Logical, degaults to TRUE. If the search string does not include any upper case letter, then assume it's not a person.}
 }
