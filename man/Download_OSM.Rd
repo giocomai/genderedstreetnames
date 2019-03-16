@@ -4,10 +4,12 @@
 \alias{Download_OSM}
 \title{Download OSM data for whole countries.}
 \usage{
-Download_OSM(countries)
+Download_OSM(countries, continent = "Europe")
 }
 \arguments{
-\item{countries}{The query to be searched.}
+\item{countries}{One or more country names. For details on the country names see http://download.geofabrik.de/}
+
+\item{continent}{Defaults to `Europe`. Available options are: `africa`, `asia`, `australia-oceania`, `central-america`, `europe`, `north-america`, `south-america`. Only one continent at a time can be chosen.}
 }
 \value{
 Used only for its side effects (downloads osm data).
