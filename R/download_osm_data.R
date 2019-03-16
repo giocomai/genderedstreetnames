@@ -84,17 +84,16 @@ Extract_roads <- function(countries) {
                                                     pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                   stringr::str_remove(pattern = "-latest-free.shp.zip")))
       }
-      
     } else {
       file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
       if (file.exists(file_location) == FALSE) {
         warning(paste0("File not available. Please download the data first with `Download_OSM('", i, "')`" ))
       } else {
         files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
-          filter(stringr::str_detect(string = Name, pattern = "roads"))
-        
+          tibble::as_tibble() %>% 
+          dplyr::pull(Name) 
         unzip(zipfile = file_location,
-              files = files_to_extract %>% pull(Name),
+              files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "roads")],
               exdir = file.path("data", "shp_roads", i))
       }
     }

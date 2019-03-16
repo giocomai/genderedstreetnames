@@ -1,0 +1,61 @@
+---
+title: "How many streets are dedicated to men, how many to women?"
+author: "Giorgio Comai (OBCT/EDJNet)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How many streets are dedicated to men, how many to women?}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In order to find out how many street are dedicated to men, how many to women, it is necessary to:
+
+1. find a dataset that includes all street names of a given city or country
+2. find out in a systematic (and ideally, automatic) way which of those streets are dedicated to persons, and among them which are dedicated to either a man or a woman 
+3. manually check if the gender extracted in the previous step is correct
+4. visualise the results
+
+The package 'genderedstreetnames` proposes an approach to deal with each of these steps. 
+
+You can install the package from GitHub:
+
+```{r eval=FALSE}
+remotes::install_github(repo = "giocomai/genderedstreetnames")
+library("genderedstreetnames")
+```
+
+
+# Step 1: Get street names
+
+There are different possible sources for street names. Relevant open data are often made available by national or local authorities. However, in order to have geolocalised street names, the most straightforward source is OpenStreetMap. 
+
+The following commands facilitate downloading relevant data. 
+
+As an example, in this vignette I will process data on street names in Romania. You can make the same with other countries simply by changing the relevant parameter. 
+
+The following commands download the archive of OpenStreetMap data for a given countries, and extracts data related to streets. 
+
+Be aware that data will be stored in subfolders of the current working directory. 
+
+The following command downloads the shapefile for all OpenStreetMap data related to a given country from [Geofabrik's website](http://download.geofabrik.de/) in zip files.
+
+```{r}
+library("genderedstreetnames")
+Download_OSM(countries = "Romania")
+
+```
+
+To process data further, files related to roads need to be extracted from the zip file, which can conveniently be done with the dedicated function, `Extract_roads`.
+
+```{r}
+Extract_roads(countries = "Romania")
+```
+
