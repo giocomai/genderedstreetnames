@@ -33,7 +33,7 @@ Download_OSM <- function(countries, continent = "Europe") {
           download.file(url = links[j],
                         destfile = fileLocation)
           files_to_extract <- unzip(zipfile = fileLocation, list = TRUE) %>% 
-            filter(str_detect(string = Name, pattern = "roads"))
+            filter(stringr::str_detect(string = Name, pattern = "roads"))
           unzip(zipfile = fileLocation, files = files_to_extract %>% pull(Name), exdir = file.path("data", "shp_roads_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                                                                                      str_remove(pattern = "-latest-free.shp.zip")))
         }
@@ -91,7 +91,7 @@ Extract_roads <- function(countries) {
         warning(paste0("File not available. Please download the data first with `Download_OSM('", i, "')`" ))
       } else {
         files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
-          filter(str_detect(string = Name, pattern = "roads"))
+          filter(stringr::str_detect(string = Name, pattern = "roads"))
         
         unzip(zipfile = file_location,
               files = files_to_extract %>% pull(Name),
