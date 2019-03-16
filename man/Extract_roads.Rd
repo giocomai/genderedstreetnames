@@ -8,6 +8,10 @@ Extract_roads(countries, export_rds = FALSE, export_csv = FALSE)
 }
 \arguments{
 \item{countries}{The query to be searched.}
+
+\item{export_rds}{Stores imported shape files as an rds file locally.}
+
+\item{export_csv}{Stores imported shape files (excluding the geographic information) as a csv file locally.}
 }
 \value{
 A data.frame with geographic data (sf).

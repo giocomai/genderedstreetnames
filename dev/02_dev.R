@@ -21,7 +21,7 @@ usethis::use_test("app")
 
 ## 3. Vignette
 usethis::use_vignette("genderedstreetnames")
-devtools::build_vignettes()
+devtools::build_vignettes(clean = FALSE, quiet = FALSE)
 
 ## 3. Code coverage
 usethis::use_travis()

@@ -62,6 +62,12 @@ head(roads)
 
 # Step 2: find out which streets are dedicated to either a man or a woman
 
+There are various approaches for facilitating the identification of the gender starting from names, and most of them use the first name as a hint.^[See for example the R package `gender` - https://github.com/ropensci/gender - for an approach based on historical data. See also the Python package `SexMachine` - https://pypi.org/project/SexMachine/ - which is also based on a database of names].
 
+This is an option, but may lead to some mistakes. I propose a multi-layered approach that first tries to match the name of person to Wikidata (after all, if a person has been entitled a street it is quite likely that they will also have at least a Wikipedia page), and only if this does not work will try to predict gender based on first name. Al
+Using Wikipedia as a reference should not only lead to less mistakes, but provides also a brief characterisation of the individual which can then be used at a later stage in the analysis.
 
+First, however, we need to "clean" street names in order to keep only the part of the street name that may potentially refer to a person. This is language specific and may involve removing the last word (e.g. remove "street" from "James Joyce Street" in order to look for "James Joyce" on Wikipedia, which will correctly result in identifying the male Irish novelist and poet).
+
+`genderstreetnames` includes a few functions to facilitate this process. Some of them are generic (e.g. remove the first or the last word) and can be applied to various languages, some of them will need to be language specific and may be added in future update (e.g. in German street names are merged with the name of the person, so a custom, language-specific solution will be needed to remove "straße" from "Mozartstraße" in order to correctly identify the male composer Wolfgang Amadeus Mozart).
 
