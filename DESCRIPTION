@@ -12,7 +12,9 @@ Imports:
     tibble,
     dplyr,
     DT,
-    sf
+    sf,
+    readr,
+    purrr
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

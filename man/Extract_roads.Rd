@@ -4,13 +4,13 @@
 \alias{Extract_roads}
 \title{Extract shape files of roads from previously downloaded}
 \usage{
-Extract_roads(countries)
+Extract_roads(countries, export_rds = FALSE, export_csv = FALSE)
 }
 \arguments{
 \item{countries}{The query to be searched.}
 }
 \value{
-Used only for its side effects (unzips shapefiles of roads from previously downloaded osm data).
+A data.frame with geographic data (sf).
 }
 \description{
 Extract shape files of roads from previously downloaded

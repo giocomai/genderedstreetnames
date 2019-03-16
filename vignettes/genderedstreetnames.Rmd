@@ -56,6 +56,12 @@ Download_OSM(countries = "Romania")
 To process data further, files related to roads need to be extracted from the zip file, which can conveniently be done with the dedicated function, `Extract_roads`.
 
 ```{r}
-Extract_roads(countries = "Romania")
+roads <- Extract_roads(countries = "Romania")
+head(roads)
 ```
+
+# Step 2: find out which streets are dedicated to either a man or a woman
+
+
+
 

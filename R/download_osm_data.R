@@ -34,7 +34,7 @@ Download_OSM <- function(countries, continent = "Europe") {
                         destfile = fileLocation)
           files_to_extract <- unzip(zipfile = fileLocation, list = TRUE) %>% 
             filter(stringr::str_detect(string = Name, pattern = "roads"))
-          unzip(zipfile = fileLocation, files = files_to_extract %>% pull(Name), exdir = file.path("data", "shp_roads_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
+          unzip(zipfile = fileLocation, files = files_to_extract %>% pull(Name), exdir = file.path("data", "roads_shp_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                                                                                      str_remove(pattern = "-latest-free.shp.zip")))
         }
       }
@@ -47,14 +47,16 @@ Download_OSM <- function(countries, continent = "Europe") {
       }
       
     }
-
+    
   }
 }
 
 #' Extract shape files of roads from previously downloaded 
 #' 
 #' @param countries The query to be searched.
-#' @return Used only for its side effects (unzips shapefiles of roads from previously downloaded osm data).
+#' @param export_rds Stores imported shape files as an rds file locally.
+#' @param export_csv Stores imported shape files (excluding the geographic information) as a csv file locally.
+#' @return A data.frame with geographic data (sf).
 #' @examples
 #' 
 #' Extract_roads(search = "Romania")
@@ -62,8 +64,8 @@ Download_OSM <- function(countries, continent = "Europe") {
 #' @export
 #' 
 
-Extract_roads <- function(countries) {
-  dir.create(path = file.path("data", "shp_roads"), showWarnings = FALSE)
+Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
+  dir.create(path = file.path("data", "roads_shp"), showWarnings = FALSE)
   countries <- tolower(countries)
   
   for (i in countries) { 
@@ -72,18 +74,21 @@ Extract_roads <- function(countries) {
       for (j in seq_along(filenames)) {
         fileLocation <- filenames[j]
         
-        files_to_extract <- unzip(zipfile = fileLocation, list = TRUE) %>% 
-          filter(stringr::str_detect(string = Name, pattern = "roads"))
+        files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
+          tibble::as_tibble() %>% 
+          dplyr::pull(Name) 
         
         unzip(zipfile = fileLocation,
-              files = files_to_extract %>% pull(Name),
+              files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "roads")],
               exdir = file.path("data",
-                                "shp_roads",
+                                "roads_shp",
                                 i,
                                 stringr::str_remove(string = filenames[j],
-                                                    pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
+                                                    pattern = stringr::fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                   stringr::str_remove(pattern = "-latest-free.shp.zip")))
       }
+      regions <- list.files(path = file.path("data", "shp_zip", i))
+      roads <- purrr::map_dfr(.x = regions, .f = function(x) sf::st_read(dsn = file.path("data", "shp_zip", i, x)))
     } else {
       file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
       if (file.exists(file_location) == FALSE) {
@@ -94,8 +99,23 @@ Extract_roads <- function(countries) {
           dplyr::pull(Name) 
         unzip(zipfile = file_location,
               files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "roads")],
-              exdir = file.path("data", "shp_roads", i))
+              exdir = file.path("data", "roads_shp", i))
+        
+        roads <- sf::st_read(dsn = file.path("data", "roads_shp", i)) 
       }
     }
+    if (export_rds == TRUE) {
+      dir.create(path = file.path("data", "roads_rds"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "roads_rds", i), showWarnings = FALSE)
+      saveRDS(object = roads,
+              file = file.path(file.path("data", "roads_rds", paste0(i, "_roads.rds"))))
+    }
+    if (export_csv == TRUE) {
+      dir.create(path = file.path("data", "roads_csv"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "roads_csv", i), showWarnings = FALSE)
+      readr::write_csv(x = roads %>% st_set_geometry(NULL),
+                       path = file.path(file.path("data", "roads_csv", paste0(i, "_roads.csv"))))
+    }
+    return(roads)
   }
 }
