@@ -11,7 +11,8 @@ Imports:
     WikidataR,
     tibble,
     dplyr,
-    DT
+    DT,
+    sf
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1
