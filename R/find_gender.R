@@ -27,65 +27,65 @@ FindGender <- function(search,
     if (exclude_without_uppercase==TRUE&stringr::str_detect(string = search, pattern = stringr::regex(pattern = "\\p{Lu}"))==FALSE) {
       return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA)) 
     }
-  }
-
-  if (cache==TRUE) {
-    dir.create(path = "wikidata", showWarnings = FALSE)
-    dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
-    dir.create(path = file.path("wikidata", "search", language), showWarnings = FALSE)
-    dir.create(path = file.path("wikidata", "item"), showWarnings = FALSE)
-  }
-  # search term
-  search_response_location <- file.path("wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
-  if (file.exists(search_response_location)==FALSE) {
-    if (only_cached==TRUE) {
-      return(NULL)
-    }
-    search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) warning(e))
-    if (is.null(search_response)) (return(NULL))
-    saveRDS(object = search_response, file = search_response_location)
-  } else {
-    search_response <- readRDS(file = search_response_location)
-  }
-  # search among results to find person
-  for (i in seq_along(search_response)) {
-    item_response_location <- file.path("wikidata", "item", paste0(search_response[[i]]$id, ".rds"))
-    if (file.exists(item_response_location)==FALSE) {
-      item <- tryCatch(WikidataR::get_item(id = search_response[[i]]$id), error = function(e) return(tibble::tibble(Query = search, Gender = NA, Description = NA, WikidataID = NA)))
-      saveRDS(object = item, file = item_response_location)
-      Sys.sleep(time = wait)
-    } else {
-      item <- readRDS(item_response_location)
-    }
     
-    claim <- WikidataR::extract_claims(items = item, claims = "P21")
-    if (is.na(claim[1][[1]][[1]])[1]) {
-      # if not person, return description
-      #        return(tibble::tibble(Query = search, Gender = NA, Description = item[[1]]$descriptions[[1]][[2]], WikidataID = item[[1]]$id))
-      
-    } else {
-      # if person, check gender
-      genderCode <- claim[1][[1]][[1]]$mainsnak$datavalue$value$id
-      if (is.null(genderCode)) {
-        gender <- NA
-      } else if (length(genderCode)==0) {
-        gender <- NA
-      } else if (genderCode == "Q6581097") {
-        gender <-  "male"
-      } else if (genderCode == "Q6581072") {
-        gender <- "female"
-      } else {
-        gender <- "other"
-      }
-      
-      if (length(item[[1]]$descriptions)>0) {
-        description <- item[[1]]$descriptions[[1]][[2]]
-      } else {
-        description <- NA
-      }
-      return(tibble::tibble(Query = search, Gender = as.character(gender), Description = description, WikidataID = item[[1]]$id))
+    if (cache==TRUE) {
+      dir.create(path = "wikidata", showWarnings = FALSE)
+      dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
+      dir.create(path = file.path("wikidata", "search", language), showWarnings = FALSE)
+      dir.create(path = file.path("wikidata", "item"), showWarnings = FALSE)
     }
-  }
+    # search term
+    search_response_location <- file.path("wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
+    if (file.exists(search_response_location)==FALSE) {
+      if (only_cached==TRUE) {
+        return(NULL)
+      }
+      search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) warning(e))
+      if (is.null(search_response)) (return(NULL))
+      saveRDS(object = search_response, file = search_response_location)
+    } else {
+      search_response <- readRDS(file = search_response_location)
+    }
+    # search among results to find person
+    for (i in seq_along(search_response)) {
+      item_response_location <- file.path("wikidata", "item", paste0(search_response[[i]]$id, ".rds"))
+      if (file.exists(item_response_location)==FALSE) {
+        item <- tryCatch(WikidataR::get_item(id = search_response[[i]]$id), error = function(e) return(tibble::tibble(Query = search, Gender = NA, Description = NA, WikidataID = NA)))
+        saveRDS(object = item, file = item_response_location)
+        Sys.sleep(time = wait)
+      } else {
+        item <- readRDS(item_response_location)
+      }
+      
+      claim <- WikidataR::extract_claims(items = item, claims = "P21")
+      if (is.na(claim[1][[1]][[1]])[1]) {
+        # if not person, return description
+        #        return(tibble::tibble(Query = search, Gender = NA, Description = item[[1]]$descriptions[[1]][[2]], WikidataID = item[[1]]$id))
+        
+      } else {
+        # if person, check gender
+        genderCode <- claim[1][[1]][[1]]$mainsnak$datavalue$value$id
+        if (is.null(genderCode)) {
+          gender <- NA
+        } else if (length(genderCode)==0) {
+          gender <- NA
+        } else if (genderCode == "Q6581097") {
+          gender <-  "male"
+        } else if (genderCode == "Q6581072") {
+          gender <- "female"
+        } else {
+          gender <- "other"
+        }
+        
+        if (length(item[[1]]$descriptions)>0) {
+          description <- item[[1]]$descriptions[[1]][[2]]
+        } else {
+          description <- NA
+        }
+        return(tibble::tibble(Query = search, Gender = as.character(gender), Description = description, WikidataID = item[[1]]$id))
+      }
+    }
+  } 
   warning(paste("No Wikidata entry matches search", dQuote(search)))
   return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA))
 }
