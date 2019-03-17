@@ -9,8 +9,12 @@ app_ui <- function() {
     # List the first level UI elements here 
     fluidPage(
       h1("genderedstreetnames"),
-      mod_select_dataset_ui("select_dataset_ui_1")
-      #shiny::textOutput(outputId = "current_folder")
+      #debugging
+      actionButton("browser", "browser"),
+      tags$script("$('#browser').show();"),
+      mod_select_dataset_ui("select_dataset_ui_1"),
+      mod_radio_datatable_ui("radio_datatable_ui_1"),
+      verbatimTextOutput('selected')
     )
   )
 }

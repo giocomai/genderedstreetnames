@@ -123,22 +123,22 @@ wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% u
                                     quietly = TRUE)
 
 dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
-dir.create(path = file.path("data", "wiki_street_names", "Romania"), showWarnings = FALSE)
-saveRDS(file = file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+dir.create(path = file.path("data", "wiki_street_names", "romania"), showWarnings = FALSE)
+saveRDS(file = file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
 ```
 
 ```{r eval = TRUE}
-if (file.exists(file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))==FALSE) {
+if (file.exists(file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))==FALSE) {
   wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% unique(),
                                     .f = FindGender,
                                     language = "ro",
                                     quietly = TRUE)
 
 dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
-dir.create(path = file.path("data", "wiki_street_names", "Romania"), showWarnings = FALSE)
-saveRDS(object = wiki_street_names, file = file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+dir.create(path = file.path("data", "wiki_street_names", "romania"), showWarnings = FALSE)
+saveRDS(object = wiki_street_names, file = file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
 } else {
-  wiki_street_names <- readRDS(file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+  wiki_street_names <- readRDS(file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
 }
 
 ```
@@ -179,6 +179,8 @@ Let's add the gender dimension:
 city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>% 
   mutate(name_clean = Remove_first_word(name)) %>% 
   left_join(wiki_street_names %>% rename(name_clean = Query), by = "name_clean")
+
+
   
 city_map <- tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() +
@@ -218,12 +220,35 @@ city_roads %>%
 Who are they?
 
 ```{r}
-city_roads %>% 
+city_roads_gender <- city_roads %>% 
   st_set_geometry(NULL) %>% 
   distinct(name, .keep_all = TRUE) %>% 
   arrange(Gender) %>% 
-  select(name, Gender, Description) %>% 
-  DT::datatable()
+  select(name, Gender, Description) 
+
+
+
+city_roads_gender %>%  DT::datatable()
 ```
 
-Unsurprisingly, this is not completely accurate. Let's get this right. 
+Unsurprisingly, this is not completely accurate. Let's export this and fix mistakes in an interactive interface.
+
+```{r}
+dir.create(path = file.path("data", "gendered_street_names"), showWarnings = FALSE)
+dir.create(path = file.path("data", "gendered_street_names", "Romania"), showWarnings = FALSE)
+saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_names", "Romania", "city_roads_gender-sibiu.rds"))
+```
+
+
+# Do the same with other cities
+
+```{r eval = FALSE}
+ro_county_seats <- xml2::read_html(x = "https://en.wikipedia.org/wiki/Counties_of_Romania") %>% 
+  rvest::html_table(fill = TRUE) %>%
+  .[[2]] %>% 
+  filter(stringr::str_detect(string = `County seat`, pattern = stringr::fixed(")"), negate = TRUE)) %>% 
+  pull(`County seat`) %>% 
+  c("Bucharest")
+
+```
+

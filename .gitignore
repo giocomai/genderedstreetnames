@@ -8,3 +8,4 @@ inst/doc
 wikidata
 .Rbuildignore
 temp.R
+temp2.R
