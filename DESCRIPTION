@@ -14,7 +14,8 @@ Imports:
     DT,
     sf,
     readr,
-    purrr
+    purrr,
+    osmdata
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

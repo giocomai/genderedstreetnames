@@ -119,3 +119,37 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
     return(roads)
   }
 }
+
+#' Get city boundaries 
+#' 
+#' @param city The name of a city/municipality.
+#' @param country The name of the country. Requested to ensure correct identification of city. 
+#' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
+#' @return An sf polygon.
+#' @examples
+#' 
+#' Get_city_boundaries(search = "Sibiu, Romania")
+#' 
+#' @export
+#' 
+
+Get_city_boundaries <- function(city, country, cache = TRUE) {
+  query <- paste(city, country, sep = ", ")
+  fileLocation <- file.path("data", "cities", tolower(country), paste0(tolower(query), ".rds"))
+  if(file.exists(fileLocation)==FALSE) {
+    city_boundary <- osmdata::opq(bbox = query) %>% 
+      osmdata::add_osm_feature(key = "boundary", value = "administrative") %>% 
+      osmdata::add_osm_feature(key = "admin_level", value = "6") %>% 
+      osmdata::add_osm_feature(key = "place", value = "city") %>% 
+      osmdata::osmdata_sf() %>% 
+      .$osm_polygons
+    if (cache == TRUE) {
+      dir.create(path = file.path("data", "cities"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "cities", tolower(country)), showWarnings = FALSE)
+      saveRDS(object = city_boundary, file = )
+    }
+  } else {
+    city_boundary <- readRDS(file = fileLocation)
+  }
+  return(city_boundary)
+}
