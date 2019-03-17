@@ -28,13 +28,13 @@ Download_OSM <- function(countries, continent = "Europe") {
                         stringr::str_subset(pattern = stringr::fixed(".shp.zip")))
       filenames <- file.path("data", "shp_zip", stringr::str_extract(string = links, pattern = paste0(i, "/.*shp.zip")))
       for (j in seq_along(links)) {
-        fileLocation <- filenames[j]
-        if (file.exists(fileLocation)==FALSE) {
+        file_location <- filenames[j]
+        if (file.exists(file_location)==FALSE) {
           download.file(url = links[j],
-                        destfile = fileLocation)
-          files_to_extract <- unzip(zipfile = fileLocation, list = TRUE) %>% 
+                        destfile = file_location)
+          files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
             filter(stringr::str_detect(string = Name, pattern = "roads"))
-          unzip(zipfile = fileLocation, files = files_to_extract %>% pull(Name), exdir = file.path("data", "roads_shp_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
+          unzip(zipfile = file_location, files = files_to_extract %>% pull(Name), exdir = file.path("data", "roads_shp_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                                                                                      str_remove(pattern = "-latest-free.shp.zip")))
         }
       }
@@ -72,13 +72,13 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
     if (is.element(i, big_countries)==TRUE) {
       filenames <- list.files(path = file.path("data", "shp_zip", i), pattern = "shp.zip")
       for (j in seq_along(filenames)) {
-        fileLocation <- filenames[j]
+        file_location <- filenames[j]
         
         files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
           tibble::as_tibble() %>% 
           dplyr::pull(Name) 
         
-        unzip(zipfile = fileLocation,
+        unzip(zipfile = file_location,
               files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "roads")],
               exdir = file.path("data",
                                 "roads_shp",
@@ -135,8 +135,8 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 
 Get_city_boundaries <- function(city, country, cache = TRUE) {
   query <- paste(city, country, sep = ", ")
-  fileLocation <- file.path("data", "cities", tolower(country), paste0(tolower(query), ".rds"))
-  if(file.exists(fileLocation)==FALSE) {
+  file_location <- file.path("data", "cities", tolower(country), paste0(tolower(query), ".rds"))
+  if(file.exists(file_location)==FALSE) {
     city_boundary <- osmdata::opq(bbox = query) %>% 
       osmdata::add_osm_feature(key = "boundary", value = "administrative") %>% 
       osmdata::add_osm_feature(key = "admin_level", value = "6") %>% 
@@ -146,10 +146,25 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
     if (cache == TRUE) {
       dir.create(path = file.path("data", "cities"), showWarnings = FALSE)
       dir.create(path = file.path("data", "cities", tolower(country)), showWarnings = FALSE)
-      saveRDS(object = city_boundary, file = )
+      saveRDS(object = city_boundary, file = file_location)
     }
   } else {
-    city_boundary <- readRDS(file = fileLocation)
+    city_boundary <- readRDS(file = file_location)
   }
   return(city_boundary)
+}
+
+#' Keep only roads within a given boundary.
+#' 
+#' @param boundary An object typically created with `Get_city_boundaries()`
+#' @param country The name of the country. Requested to ensure correct identification of city. 
+#' @return A data frame of the sf class including all roads insidet the given boundary
+#' @examples
+#' 
+#' Subset_roads(city_boundary, roads)
+#' 
+#' @export
+#' 
+Subset_roads <- function(boundary, roads) {
+  roads[st::st_within(roads, city_boundary) %>% lengths > 0,]
 }
