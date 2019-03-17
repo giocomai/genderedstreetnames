@@ -166,5 +166,5 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
 #' @export
 #' 
 Subset_roads <- function(boundary, roads) {
-  roads[st::st_within(roads, city_boundary) %>% lengths > 0,]
+  roads[sf::st_within(roads, city_boundary) %>% lengths > 0,]
 }

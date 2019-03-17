@@ -12,24 +12,38 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
 )
 ```
 
 In order to find out how many street are dedicated to men, how many to women, it is necessary to:
 
 1. find a dataset that includes all street names of a given city or country
-2. find out in a systematic (and ideally, automatic) way which of those streets are dedicated to persons, and among them which are dedicated to either a man or a woman 
+2. find out in a systematic (and ideally, automatic) way which of those streets are dedicated to persons, and among them which are dedicated to either a man or a woman.
 3. manually check if the gender extracted in the previous step is correct
 4. visualise the results
 
 The package 'genderedstreetnames` proposes an approach to deal with each of these steps. 
+
+At the current stage, the package addresses instances when a street is dedicated to a single person, and that person can be identified as either male or female. This reductionist approach is of course far from unproblematic, as it leaves out street names dedicated to more than a person, gendered groups of people, as well as people with non-binary gender identities, yet it may provide useful inputs for a public conversation around gender and toponymy. Future version of the pacakge may consider alternative approaches, and of course users can adapt these functions to other purposes. 
 
 You can install the package from GitHub:
 
 ```{r eval=FALSE}
 remotes::install_github(repo = "giocomai/genderedstreetnames")
 library("genderedstreetnames")
+```
+
+Before starting, let's load all required libraries
+
+```{r message=FALSE}
+library("genderedstreetnames") # this package!
+library("dplyr") # for data processing
+library("purrr") # for serialising data processing
+library("sf") # for processing geographic data
+library("tmap") # for plotting maps
 ```
 
 
@@ -48,12 +62,14 @@ Be aware that data will be stored in subfolders of the current working directory
 The following command downloads the shapefile for all OpenStreetMap data related to a given country from [Geofabrik's website](http://download.geofabrik.de/) in zip files.
 
 ```{r}
-library("genderedstreetnames")
+
 Download_OSM(countries = "Romania")
 
 ```
 
 To process data further, files related to roads need to be extracted from the zip file, which can conveniently be done with the dedicated function, `Extract_roads`.
+
+Here you can see a preview of the data imported from OpenStreetMap on all streets in Romania:
 
 ```{r}
 roads <- Extract_roads(countries = "Romania")
@@ -64,10 +80,150 @@ head(roads)
 
 There are various approaches for facilitating the identification of the gender starting from names, and most of them use the first name as a hint.^[See for example the R package `gender` - https://github.com/ropensci/gender - for an approach based on historical data. See also the Python package `SexMachine` - https://pypi.org/project/SexMachine/ - which is also based on a database of names].
 
-This is an option, but may lead to some mistakes. I propose a multi-layered approach that first tries to match the name of person to Wikidata (after all, if a person has been entitled a street it is quite likely that they will also have at least a Wikipedia page), and only if this does not work will try to predict gender based on first name. Al
-Using Wikipedia as a reference should not only lead to less mistakes, but provides also a brief characterisation of the individual which can then be used at a later stage in the analysis.
+This is an option, but may lead to some mistakes. I propose a multi-layered approach that first tries to match the name of person to Wikidata (after all, if a person has been entitled a street it is quite likely that they will also have at least a Wikipedia page), and only if this does not work will try to predict gender based on first name. Besides, using Wikipedia should also allow to match cases when the database does not include the first name of the person to which it is dedicated (e.g. Mozartstraße). Finally, using Wikipedia as a reference should not only lead to less mistakes, but provides also a brief characterisation of the individual which can then be used at a later stage in the analysis.
 
 First, however, we need to "clean" street names in order to keep only the part of the street name that may potentially refer to a person. This is language specific and may involve removing the last word (e.g. remove "street" from "James Joyce Street" in order to look for "James Joyce" on Wikipedia, which will correctly result in identifying the male Irish novelist and poet).
 
 `genderstreetnames` includes a few functions to facilitate this process. Some of them are generic (e.g. remove the first or the last word) and can be applied to various languages, some of them will need to be language specific and may be added in future update (e.g. in German street names are merged with the name of the person, so a custom, language-specific solution will be needed to remove "straße" from "Mozartstraße" in order to correctly identify the male composer Wolfgang Amadeus Mozart).
 
+In the case of Romania, it is quite easy to deal with this issue, as it suffices to remove the first word of the street names:
+
+```{r}
+street_names <- roads %>% 
+  st_set_geometry(NULL) %>% 
+  transmute(name, name_clean = Remove_first_word(name))
+
+head(street_names)
+```
+
+Now we are ready to feed the street names into Wikidata and see if it can reliably extract street names. The language parameter sets in which version of Wikidata the query is run, as results vary. Let's try first with a single name:
+
+```{r}
+FindGender(search = "Mircea Eliade", language = "ro")
+```
+
+Mircea Eliade is correctly identified as a male writer. What this function does in the background is look for "Mircea Eliade" on Wikidata (which stores metadata of Wikipedia pages), get the resulting entity on the database - which can be seen at this link  https://www.wikidata.org/wiki/Q41590 - and extract the "sex or gender" field.
+
+By default, the function `FindGender` caches queries and results locally and waits a fraction of a second between each query, reducing the load on Wikidata's server and speeding up the process for following runs. This also means that if you run this command with a long list of queries, you can interrupt the process and start it again in another session without effectively restarting anew.
+
+Here is the output of querying the beginning of our dataset:
+
+```{r}
+purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% head(),
+               .f = FindGender,
+               language = "ro")
+```
+
+We can now process the whole dataset. Since this process is time consuming, it may be best to store the resulting output locally. 
+
+```{r eval = FALSE}
+wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% unique(),
+                                    .f = FindGender,
+                                    language = "ro",
+                                    quietly = TRUE)
+
+dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
+dir.create(path = file.path("data", "wiki_street_names", "Romania"), showWarnings = FALSE)
+saveRDS(file = file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+```
+
+```{r eval = TRUE}
+if (file.exists(file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))==FALSE) {
+  wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% unique(),
+                                    .f = FindGender,
+                                    language = "ro",
+                                    quietly = TRUE)
+
+dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
+dir.create(path = file.path("data", "wiki_street_names", "Romania"), showWarnings = FALSE)
+saveRDS(object = wiki_street_names, file = file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+} else {
+  wiki_street_names <- readRDS(file.path("data", "wiki_street_names", "Romania", "wiki_street_names-romania.rds"))
+}
+
+```
+
+Now we can already have some summary statistics of what we have found:
+
+```{r}
+
+```
+
+Given the fact that OpenStreetMap may be far from complete in smaller villages, and that smaller villages sometimes dedicate streets to local figures, for the rest of this analyse we will focus on cities. 
+
+Let's try with a single city, then see how to expand this to more.
+
+For a start, we need the borders of the municipality we want to focus on. Let's take the city of Sibiu, in Transylvania. This is how the borders of the municipality look:
+
+```{r}
+city_boundary <- Get_city_boundaries(city = "Sibiu", country = "Romania")
+
+tmap::tm_shape(city_boundary) + 
+  tmap::tm_polygons() 
+```
+
+We can query our dataset, and find out which of all the streets and squares in Romania are located within the municipality of Sibiu. These are all the streets located in the municipality of Sibiu:
+
+```{r}
+city_roads <- Subset_roads(boundary = city_boundary, roads = roads)
+
+tmap::tm_shape(city_boundary) + 
+  tmap::tm_polygons() +
+  tmap::tm_shape(city_roads) +
+  tmap::tm_lines()
+```
+
+Let's add the gender dimension:
+
+```{r}
+city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>% 
+  mutate(name_clean = Remove_first_word(name)) %>% 
+  left_join(wiki_street_names %>% rename(name_clean = Query), by = "name_clean")
+  
+city_map <- tmap::tm_shape(city_boundary) + 
+  tmap::tm_polygons() +
+  tmap::tm_shape(city_roads) +
+  tmap::tm_lines(col = "Gender", palette = "Set1", textNA = "other")
+
+city_map
+#tmap::tmap_save(city_map, "gendered_street_city.png")
+```
+
+Not many streets dedicated to women, it seems. 
+
+Let's have a closer look with an interactive version of this map:
+
+```{r}
+tmap::tmap_mode("view")
+
+tmap::tm_shape(city_boundary) + 
+  tmap::tm_polygons(popup.vars = FALSE) +
+  tmap::tm_shape(city_roads) +
+  tmap::tm_lines(col = "Gender",
+                 lwd = 2,
+                 palette = "Set1",
+                 textNA = "other",
+                 id = "name",
+                 popup.vars = c("Gender", "Description"))
+```
+
+
+```{r}
+city_roads %>% 
+  st_set_geometry(NULL) %>% 
+  distinct(name, .keep_all = TRUE) %>% 
+  count(Gender)
+```
+
+Who are they?
+
+```{r}
+city_roads %>% 
+  st_set_geometry(NULL) %>% 
+  distinct(name, .keep_all = TRUE) %>% 
+  arrange(Gender) %>% 
+  select(name, Gender, Description) %>% 
+  DT::datatable()
+```
+
+Unsurprisingly, this is not completely accurate. Let's get this right. 
