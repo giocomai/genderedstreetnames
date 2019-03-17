@@ -5,7 +5,8 @@
 \title{Find if a string refers to a person, and if so, finds gender by searching Wikidata}
 \usage{
 FindGender(search, language = "en", cache = TRUE, wait = 0.1,
-  only_cached = FALSE, exclude_without_uppercase = TRUE)
+  only_cached = FALSE, exclude_without_uppercase = TRUE,
+  quietly = FALSE)
 }
 \arguments{
 \item{search}{The query to be searched.}

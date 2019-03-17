@@ -20,12 +20,15 @@ FindGender <- function(search,
                        cache = TRUE,
                        wait = 0.1,
                        only_cached = FALSE,
-                       exclude_without_uppercase = TRUE) {
+                       exclude_without_uppercase = TRUE,
+                       quietly = FALSE) {
   # If no capital letters, just say it's not a person
-  if (exclude_without_uppercase==TRUE&stringr::str_detect(string = search, pattern = stringr::regex(pattern = "\\p{Lu}"))==FALSE) {
-    return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA)) 
+  if (is.na(search)==FALSE) {
+    if (exclude_without_uppercase==TRUE&stringr::str_detect(string = search, pattern = stringr::regex(pattern = "\\p{Lu}"))==FALSE) {
+      return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA)) 
+    }
   }
-  
+
   if (cache==TRUE) {
     dir.create(path = "wikidata", showWarnings = FALSE)
     dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
