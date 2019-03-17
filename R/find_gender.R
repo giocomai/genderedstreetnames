@@ -86,6 +86,6 @@ FindGender <- function(search,
       }
     }
   } 
-  warning(paste("No Wikidata entry matches search", dQuote(search)))
+  warning(paste("\n", dQuote(search), "does not match any person with either male or female gender."))
   return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA))
 }
