@@ -20,6 +20,8 @@ FindGender(search, language = "en", cache = TRUE, wait = 0.1,
 \item{only_cached}{Logical, defaults to FALSE. If TRUE, it only uses locally cached information.}
 
 \item{exclude_without_uppercase}{Logical, degaults to TRUE. If the search string does not include any upper case letter, then assume it's not a person.}
+
+\item{quietly}{Logical, defaults to FALSE. If TRUE, no warning message appears when no relevent Wikidata entry is found.}
 }
 \value{
 A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID

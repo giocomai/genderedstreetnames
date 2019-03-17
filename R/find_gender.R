@@ -6,6 +6,7 @@
 #' @param wait Numeric, defaults to 0.1. Waiting time between queries, relevant when making a large number of queries. 
 #' @param only_cached Logical, defaults to FALSE. If TRUE, it only uses locally cached information.
 #' @param exclude_without_uppercase Logical, degaults to TRUE. If the search string does not include any upper case letter, then assume it's not a person.
+#' @param quietly Logical, defaults to FALSE. If TRUE, no warning message appears when no relevent Wikidata entry is found.
 #' @return A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID
 #' @examples
 #' 
@@ -86,6 +87,8 @@ FindGender <- function(search,
       }
     }
   } 
-  warning(paste("\n", dQuote(search), "does not match any person with either male or female gender."))
+  if (quietly==FALSE) {
+    warning(paste("\n", dQuote(search), "does not match any person with either male or female gender."))
+  }
   return(tibble::tibble(Query = search, Gender = as.character(NA), Description = NA, WikidataID = NA))
 }
