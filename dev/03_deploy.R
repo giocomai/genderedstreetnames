@@ -15,3 +15,6 @@ golem::add_rconnect_file()
 
 ## 5.2 If you want to deploy via a Dockerfile
 golem::add_dockerfile()
+
+# Deploy website
+pkgdown::build_site()

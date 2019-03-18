@@ -173,7 +173,7 @@ tmap::tm_shape(city_boundary) +
   tmap::tm_lines()
 ```
 
-Let's add the gender dimension:
+Which of these streets are dedicated to women? Let's have a look
 
 ```{r}
 city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>% 
@@ -181,7 +181,66 @@ city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>%
   left_join(wiki_street_names %>% rename(name_clean = Query), by = "name_clean")
 
 
-  
+city_roads_gender <- city_roads %>% 
+  st_set_geometry(NULL) %>% 
+  distinct(name, .keep_all = TRUE) %>% 
+  arrange(Gender) %>% 
+  select(name, Gender, Description) 
+
+city_roads_gender %>% 
+  count(Gender) %>% 
+  knitr::kable()
+```
+
+Not many streets dedicated to women, it seems. 
+
+Who are they?
+
+```{r warning=FALSE}
+
+city_roads_gender %>%  DT::datatable(rownames = FALSE)
+```
+
+## Manually fixing what's not right
+
+Unsurprisingly, this is not completely accurate. Let's export this and fix mistakes in an interactive interface, which allows to quickly set the records straight. 
+
+When you're done fixing, click on the "Download as .rds" button at the bottom of the table to save your changes. By default, changes are stored locally under `data/gendered_street_names_fixed`. Additonally, you are given the chance to keep them elsewhere. 
+
+Cities have usually just a few hundred streets, and since the vast majority are already correctly categorised it takes literally just a few minutes to fix any outstanding mistake.
+
+```{r}
+dir.create(path = file.path("data", "gendered_street_names"), showWarnings = FALSE)
+dir.create(path = file.path("data", "gendered_street_names", "Romania"), showWarnings = FALSE)
+saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_names", "romania", "city_roads_gender-sibiu.rds"))
+
+```
+
+```{r eval=FALSE}
+Fix_street_names(city = "Sibiu", country = "Romania")
+```
+
+
+Fixed what was not right?
+
+Now let's reimport the updated data, and finally plot the maps.
+
+```{r}
+fixed_roads <- readRDS(file = file.path("data", "gendered_street_names_fixed", "romania", "city_roads_gender_fixed-sibiu.rds"))
+
+city_roads <- city_roads %>% select(-Gender) %>% mutate(name = as.character(name)) %>% 
+  left_join(y = fixed_roads %>% rename(name = `Street_name`), by = "name") %>% 
+  mutate(Gender = if_else(condition = Gender == "Other", true = as.character(NA), false = Gender))
+
+dir.create(path = file.path("data", "gendered_street_names_fixed_geo"), showWarnings = FALSE)
+dir.create(path = file.path("data", "gendered_street_names_fixed_geo", "romania"), showWarnings = FALSE)
+
+saveRDS(object = city_roads, file = file.path("data", "gendered_street_names_fixed_geo", "romania", "city_roads_gender_fixed_geo-sibiu.rds"))
+```
+
+```{r}
+tmap::tmap_mode(mode = "plot")
+
 city_map <- tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() +
   tmap::tm_shape(city_roads) +
@@ -191,7 +250,7 @@ city_map
 #tmap::tmap_save(city_map, "gendered_street_city.png")
 ```
 
-Not many streets dedicated to women, it seems. 
+
 
 Let's have a closer look with an interactive version of this map:
 
@@ -209,46 +268,35 @@ tmap::tm_shape(city_boundary) +
                  popup.vars = c("Gender", "Description"))
 ```
 
+After fixing miscategorised street names, it appears there are even less street names dedicated to women:
 
 ```{r}
-city_roads %>% 
+city_roads_gender_balance <- 
+  city_roads %>% 
   st_set_geometry(NULL) %>% 
   distinct(name, .keep_all = TRUE) %>% 
   count(Gender)
+
+knitr::kable(city_roads_gender_balance)
+
 ```
 
-Who are they?
+Among all the streets in Sibiu that are dedicated to a person, it appears that about `r scales::percent(x = city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Female"]/city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Male"])` are dedicated to women. 
+
+Even if a couple of streets have been miscategorised, the overall picture is unlikely to change much. 
+
+For reference, here is the updated list of street names:
+
 
 ```{r}
-city_roads_gender <- city_roads %>% 
-  st_set_geometry(NULL) %>% 
-  distinct(name, .keep_all = TRUE) %>% 
+city_roads %>%
   arrange(Gender) %>% 
-  select(name, Gender, Description) 
-
-
-
-city_roads_gender %>%  DT::datatable()
-```
-
-Unsurprisingly, this is not completely accurate. Let's export this and fix mistakes in an interactive interface.
-
-```{r}
-dir.create(path = file.path("data", "gendered_street_names"), showWarnings = FALSE)
-dir.create(path = file.path("data", "gendered_street_names", "Romania"), showWarnings = FALSE)
-saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_names", "Romania", "city_roads_gender-sibiu.rds"))
+  sf::st_set_geometry(NULL) %>% 
+  select(name, Gender, Description) %>% 
+  distinct(name, .keep_all = TRUE) %>% 
+  DT::datatable(rownames = FALSE)
 ```
 
 
-# Do the same with other cities
-
-```{r eval = FALSE}
-ro_county_seats <- xml2::read_html(x = "https://en.wikipedia.org/wiki/Counties_of_Romania") %>% 
-  rvest::html_table(fill = TRUE) %>%
-  .[[2]] %>% 
-  filter(stringr::str_detect(string = `County seat`, pattern = stringr::fixed(")"), negate = TRUE)) %>% 
-  pull(`County seat`) %>% 
-  c("Bucharest")
-
-```
+A separate vignette will outline how to systematically repeat this procedure and systematically create relevant maps for multiple cities in a single go. 
 
