@@ -116,16 +116,6 @@ purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% head(),
 
 We can now process the whole dataset. Since this process is time consuming, it may be best to store the resulting output locally. 
 
-```{r eval = FALSE}
-wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% unique(),
-                                    .f = FindGender,
-                                    language = "ro",
-                                    quietly = TRUE)
-
-dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
-dir.create(path = file.path("data", "wiki_street_names", "romania"), showWarnings = FALSE)
-saveRDS(file = file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
-```
 
 ```{r eval = TRUE}
 if (file.exists(file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))==FALSE) {
@@ -143,11 +133,6 @@ saveRDS(object = wiki_street_names, file = file.path("data", "wiki_street_names"
 
 ```
 
-Now we can already have some summary statistics of what we have found:
-
-```{r}
-
-```
 
 Given the fact that OpenStreetMap may be far from complete in smaller villages, and that smaller villages sometimes dedicate streets to local figures, for the rest of this analyse we will focus on cities. 
 
@@ -201,7 +186,7 @@ Who are they?
 city_roads_gender %>%  DT::datatable(rownames = FALSE)
 ```
 
-## Manually fixing what's not right
+# Step 3: Manually fixing what's not right
 
 Unsurprisingly, this is not completely accurate. Let's export this and fix mistakes in an interactive interface, which allows to quickly set the records straight. 
 
@@ -224,6 +209,8 @@ Fix_street_names(city = "Sibiu", country = "Romania")
 Fixed what was not right?
 
 Now let's reimport the updated data, and finally plot the maps.
+
+# Step 4: visualise on a map
 
 ```{r}
 fixed_roads <- readRDS(file = file.path("data", "gendered_street_names_fixed", "romania", "city_roads_gender_fixed-sibiu.rds"))

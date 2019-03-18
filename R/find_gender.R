@@ -80,12 +80,16 @@ FindGender <- function(search,
           gender <- "other"
         }
         
-        if (is.element(el = description_language, set = names(item[[1]]$descriptions))) {
-          description <- item[[1]]$descriptions[[description_language]]$value
-        } else if (is.element(el = "en", set = names(item[[1]]$descriptions))) {
-          description <- item[[1]]$descriptions[["en"]]$value
-        } else if (is.element(el = language, set = names(item[[1]]$descriptions))) {
-          description <- item[[1]]$descriptions[[language]]$value
+        if (length(item[[1]]$descriptions)>0) {
+          if (is.element(el = description_language, set = names(item[[1]]$descriptions))) {
+            description <- item[[1]]$descriptions[[description_language]]$value
+          } else if (is.element(el = "en", set = names(item[[1]]$descriptions))) {
+            description <- item[[1]]$descriptions[["en"]]$value
+          } else if (is.element(el = language, set = names(item[[1]]$descriptions))) {
+            description <- item[[1]]$descriptions[[language]]$value
+          } else {
+            description <- NA
+          } 
         } else {
           description <- NA
         }
