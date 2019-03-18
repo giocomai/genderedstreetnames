@@ -4,14 +4,16 @@
 \alias{FindGender}
 \title{Find if a string refers to a person, and if so, finds gender by searching Wikidata}
 \usage{
-FindGender(search, language = "en", cache = TRUE, wait = 0.1,
-  only_cached = FALSE, exclude_without_uppercase = TRUE,
-  quietly = FALSE)
+FindGender(search, language = "en", description_language = "en",
+  cache = TRUE, wait = 0.1, only_cached = FALSE,
+  exclude_without_uppercase = TRUE, quietly = FALSE)
 }
 \arguments{
 \item{search}{The query to be searched.}
 
-\item{language}{Two letters language codes to be passed to WikiData}
+\item{language}{Two letters language codes to be passed to WikiData to determine search results; it works similarly as looking in the corresponding version of Wikipedia.}
+
+\item{description_language}{The language in which preferably to return the description as a two letter code. If not available, defaults to English. If English is not available, defaults to the language used to search in Wikidata. If not available, it returns NA.}
 
 \item{cache}{Logical, defaults to TRUE. IF TRUE, it stores data on the search string and the resulting Wikidata object. Data are stored inside a `wikidata` folder (if it does not exist, it is automatically created).}
 

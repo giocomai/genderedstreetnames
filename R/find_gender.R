@@ -1,7 +1,8 @@
 #' Find if a string refers to a person, and if so, finds gender by searching Wikidata
 #' 
 #' @param search The query to be searched.
-#' @param language Two letters language codes to be passed to WikiData
+#' @param language Two letters language codes to be passed to WikiData to determine search results; it works similarly as looking in the corresponding version of Wikipedia. 
+#' @param description_language The language in which preferably to return the description as a two letter code. If not available, defaults to English. If English is not available, defaults to the language used to search in Wikidata. If not available, it returns NA. 
 #' @param cache Logical, defaults to TRUE. IF TRUE, it stores data on the search string and the resulting Wikidata object. Data are stored inside a `wikidata` folder (if it does not exist, it is automatically created).
 #' @param wait Numeric, defaults to 0.1. Waiting time between queries, relevant when making a large number of queries. 
 #' @param only_cached Logical, defaults to FALSE. If TRUE, it only uses locally cached information.
@@ -18,6 +19,7 @@
 
 FindGender <- function(search,
                        language = "en",
+                       description_language = "en",
                        cache = TRUE,
                        wait = 0.1,
                        only_cached = FALSE,
@@ -78,8 +80,12 @@ FindGender <- function(search,
           gender <- "other"
         }
         
-        if (length(item[[1]]$descriptions)>0) {
-          description <- item[[1]]$descriptions[[1]][[2]]
+        if (is.element(el = description_language, set = names(item[[1]]$descriptions))) {
+          description <- item[[1]]$descriptions[[description_language]]$value
+        } else if (is.element(el = "en", set = names(item[[1]]$descriptions))) {
+          description <- item[[1]]$descriptions[["en"]]$value
+        } else if (is.element(el = language, set = names(item[[1]]$descriptions))) {
+          description <- item[[1]]$descriptions[[language]]$value
         } else {
           description <- NA
         }
