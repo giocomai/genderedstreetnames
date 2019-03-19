@@ -43,11 +43,13 @@ FindGender <- function(search,
       if (only_cached==TRUE) {
         return(NULL)
       }
-      search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) warning(e))
+      search_response <- tryCatch(WikidataR::find_item(search_term = search, language = language, limit = 3), error = function(e) {warning(e) 
+        NULL})
       if (is.null(search_response)) (return(NULL))
       saveRDS(object = search_response, file = search_response_location)
     } else {
       search_response <- readRDS(file = search_response_location)
+      if (is.null(search_response)) (return(NULL))
     }
     # search among results to find person
     for (i in seq_along(search_response)) {

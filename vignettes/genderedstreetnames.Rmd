@@ -13,8 +13,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
-  fig.height = 5
+  fig.width = 8,
+  fig.height = 6
 )
 ```
 
@@ -196,7 +196,7 @@ Cities have usually just a few hundred streets, and since the vast majority are 
 
 ```{r}
 dir.create(path = file.path("data", "gendered_street_names"), showWarnings = FALSE)
-dir.create(path = file.path("data", "gendered_street_names", "Romania"), showWarnings = FALSE)
+dir.create(path = file.path("data", "gendered_street_names", "romania"), showWarnings = FALSE)
 saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_names", "romania", "city_roads_gender-sibiu.rds"))
 
 ```
@@ -245,7 +245,7 @@ Let's have a closer look with an interactive version of this map:
 tmap::tmap_mode("view")
 
 tmap::tm_shape(city_boundary) + 
-  tmap::tm_polygons(popup.vars = FALSE) +
+  tmap::tm_polygons(col = "lightblue", alpha = 0.2, popup.vars = FALSE) +
   tmap::tm_shape(city_roads) +
   tmap::tm_lines(col = "Gender",
                  lwd = 2,
@@ -268,7 +268,7 @@ knitr::kable(city_roads_gender_balance)
 
 ```
 
-Among all the streets in Sibiu that are dedicated to a person, it appears that about `r scales::percent(x = city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Female"]/city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Male"])` are dedicated to women. 
+Among all the `r sum(city_roads_gender_balance$n, na.rm=FALSE)` streets in Sibiu that are dedicated to a person, it appears that only `r city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Female"]` are dedicated to a woman. In other words, less than 1 percent of the streets in Sibiu are dedicated to a woman (about `r scales::percent(x = city_roads_gender_balance$n[is.na(city_roads_gender_balance$Gender)==FALSE&city_roads_gender_balance$Gender=="Male"]/sum(city_roads_gender_balance$n, na.rm=FALSE), accuracy = 1)` are dedicated to men). 
 
 Even if a couple of streets have been miscategorised, the overall picture is unlikely to change much. 
 

@@ -108,9 +108,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>FindGender</span>(<span class='no'>search</span>, <span class='kw'>language</span> <span class='kw'>=</span> <span class='st'>"en"</span>, <span class='kw'>cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>wait</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>only_cached</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>exclude_without_uppercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>FindGender</span>(<span class='no'>search</span>, <span class='kw'>language</span> <span class='kw'>=</span> <span class='st'>"en"</span>, <span class='kw'>description_language</span> <span class='kw'>=</span> <span class='st'>"en"</span>,
+  <span class='kw'>cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>wait</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>only_cached</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>exclude_without_uppercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -121,7 +121,11 @@
     </tr>
     <tr>
       <th>language</th>
-      <td><p>Two letters language codes to be passed to WikiData</p></td>
+      <td><p>Two letters language codes to be passed to WikiData to determine search results; it works similarly as looking in the corresponding version of Wikipedia.</p></td>
+    </tr>
+    <tr>
+      <th>description_language</th>
+      <td><p>The language in which preferably to return the description as a two letter code. If not available, defaults to English. If English is not available, defaults to the language used to search in Wikidata. If not available, it returns NA.</p></td>
     </tr>
     <tr>
       <th>cache</th>
