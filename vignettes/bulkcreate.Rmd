@@ -1,0 +1,42 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+
+if (file.exists("cities.rds")==FALSE) {
+cities <- ro_county_seats <- xml2::read_html(x = "https://en.wikipedia.org/wiki/Counties_of_Romania") %>% 
+  rvest::html_table(fill = TRUE) %>%
+  .[[2]] %>% 
+  filter(stringr::str_detect(string = `County seat`, pattern = stringr::fixed(")"), negate = TRUE)) %>% 
+  pull(`County seat`) %>% 
+  c("Bucharest")
+
+saveRDS(object = cities, file = "cities.rds")
+} else {
+  cities <- readRDS(file = "cities.rds")
+}
+
+
+```
+
+
+```{r}
+Create_bulk(cities = c("Sibiu", "Timișoara"), country = "Romania")
+
+```
+

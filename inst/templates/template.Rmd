@@ -1,0 +1,37 @@
+---
+params:
+  city: Sibiu
+  country: Romania
+output:
+  html_document:
+    self_contained: true
+---
+
+---
+title: `r paste0("How many streets and squares are dedicated to women in ", params$city, "?")`
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library("genderedstreetnames")
+```
+
+
+
+```{r}
+Download_OSM(countries = params$country)
+
+roads <- Extract_roads(countries = params$country)
+
+city_boundary <- Get_city_boundaries(city = params$city, country = params$country, cache = TRUE)
+
+city_roads <- Subset_roads(boundary = city_boundary, roads = roads)
+#> although coordinates are longitude/latitude, st_within assumes that they are planar
+
+tmap::tm_shape(city_boundary) + 
+  tmap::tm_polygons() +
+  tmap::tm_shape(city_roads) +
+  tmap::tm_lines()
+```
+

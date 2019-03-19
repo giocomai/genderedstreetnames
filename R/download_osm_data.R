@@ -135,8 +135,11 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 
 Get_city_boundaries <- function(city, country, cache = TRUE) {
   query <- paste(city, country, sep = ", ")
+  
   dir.create(path = "data", showWarnings = FALSE)
   dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+  dir.create(path = file.path("data", "city_boundaries",  tolower(country)), showWarnings = FALSE)
+  
   file_location <- file.path("data", "city_boundaries", tolower(country), paste0(tolower(city), ".rds"))
   if(file.exists(file_location)==FALSE) {
     city_boundary <- osmdata::opq(bbox = query) %>% 
