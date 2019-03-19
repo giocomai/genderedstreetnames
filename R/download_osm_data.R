@@ -135,7 +135,9 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 
 Get_city_boundaries <- function(city, country, cache = TRUE) {
   query <- paste(city, country, sep = ", ")
-  file_location <- file.path("data", "cities", tolower(country), paste0(tolower(query), ".rds"))
+  dir.create(path = "data", showWarnings = FALSE)
+  dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+  file_location <- file.path("data", "city_boundaries", tolower(country), paste0(tolower(city), ".rds"))
   if(file.exists(file_location)==FALSE) {
     city_boundary <- osmdata::opq(bbox = query) %>% 
       osmdata::add_osm_feature(key = "boundary", value = "administrative") %>% 
@@ -144,8 +146,8 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
       osmdata::osmdata_sf() %>% 
       .$osm_polygons
     if (cache == TRUE) {
-      dir.create(path = file.path("data", "cities"), showWarnings = FALSE)
-      dir.create(path = file.path("data", "cities", tolower(country)), showWarnings = FALSE)
+      dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "city_boundaries", tolower(city)), showWarnings = FALSE)
       saveRDS(object = city_boundary, file = file_location)
     }
   } else {
