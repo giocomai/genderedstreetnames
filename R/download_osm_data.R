@@ -17,6 +17,7 @@ Download_OSM <- function(countries, continent = "Europe") {
   dir.create(path = "data", showWarnings = FALSE)
   dir.create(path = file.path("data", "shp_zip"), showWarnings = FALSE)
   for (i in countries) {
+    # big countries
     if (is.element(i, big_countries)==TRUE) {
       dir.create(path = file.path("data", "shp_zip", i), showWarnings = FALSE)
       links <- paste0("http://download.geofabrik.de/europe/", 
@@ -32,13 +33,9 @@ Download_OSM <- function(countries, continent = "Europe") {
         if (file.exists(file_location)==FALSE) {
           download.file(url = links[j],
                         destfile = file_location)
-          files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
-            filter(stringr::str_detect(string = Name, pattern = "roads"))
-          unzip(zipfile = file_location, files = files_to_extract %>% pull(Name), exdir = file.path("data", "roads_shp_big_countries", i, str_remove(string = filenames[j], pattern = fixed(paste0("data/shp_zip/", i, "/"))) %>% 
-                                                                                                     str_remove(pattern = "-latest-free.shp.zip")))
         }
       }
-      
+      # small countries
     } else {
       file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
       if (file.exists(file_location)==FALSE) {
