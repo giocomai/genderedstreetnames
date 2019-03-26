@@ -67,7 +67,7 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
   
   for (i in countries) { 
     if (is.element(i, big_countries)==TRUE) {
-      filenames <- list.files(path = file.path("data", "shp_zip", i), pattern = "shp.zip")
+      filenames <- list.files(path = file.path("data", "shp_zip", i), pattern = "shp.zip", full.names = TRUE)
       for (j in seq_along(filenames)) {
         file_location <- filenames[j]
         
@@ -84,8 +84,8 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
                                                     pattern = stringr::fixed(paste0("data/shp_zip/", i, "/"))) %>% 
                                   stringr::str_remove(pattern = "-latest-free.shp.zip")))
       }
-      regions <- list.files(path = file.path("data", "shp_zip", i))
-      roads <- purrr::map_dfr(.x = regions, .f = function(x) sf::st_read(dsn = file.path("data", "shp_zip", i, x)))
+      regions <- list.files(path = file.path("data", "shp_zip", i)) %>% stringr::str_remove(pattern = stringr::fixed("-latest-free.shp.zip"))
+      roads <- purrr::map_dfr(.x = regions, .f = function(x) sf::st_read(dsn = file.path("data", "roads_shp", i, x)))
     } else {
       file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
       if (file.exists(file_location) == FALSE) {
