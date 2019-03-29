@@ -15,14 +15,15 @@ Create_bulk <- function(cities, country) {
   country <- tolower(country)
   
   dir.create("html", showWarnings = FALSE) 
+  dir.create("html", country, showWarnings = FALSE) 
   
   # if already processed, don't do them again
-  citiesDone <- list.files(path = file.path("html"), include.dirs = FALSE) %>%
+  citiesDone <- list.files(path = file.path("html", country), include.dirs = FALSE) %>%
     stringr::str_remove(".html")
   cities <- cities[is.element(cities, citiesDone)==FALSE]
   
   if (length(citiesDone)>0) {
-    message(paste0("The following cities have already been processed. To re-create the files, delete them first: ", paste(citiesDone, sep = ", ")))
+    message(paste0("\nThe following cities have already been processed. To re-create the files, delete them first: ", paste(citiesDone, sep = ", ")))
   }
 
   for (i in cities) {
