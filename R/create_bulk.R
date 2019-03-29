@@ -65,7 +65,7 @@ Create_bulk <- function(cities, country) {
                         city_roads_path = normalizePath(city_roads_path)
                       ),
                       output_file = paste0(i,".html"),
-                      output_dir = "html")
+                      output_dir = file.path("html", country))
   }
   
   
