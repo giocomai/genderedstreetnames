@@ -147,7 +147,6 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
       .$osm_polygons
     if (cache == TRUE) {
       dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
-      dir.create(path = file.path("data", "city_boundaries", tolower(city)), showWarnings = FALSE)
       saveRDS(object = city_boundary, file = file_location)
     }
   } else {
@@ -168,5 +167,5 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
 #' @export
 #' 
 Subset_roads <- function(boundary, roads) {
-  roads[sf::st_within(roads, city_boundary) %>% lengths > 0,]
+  roads[sf::st_within(roads, boundary) %>% lengths > 0,]
 }

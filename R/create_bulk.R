@@ -26,7 +26,6 @@ Create_bulk <- function(cities, country) {
   }
 
   for (i in cities) {
-    city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
     file_location_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds"))))
     file_location_not_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_geo", country, paste0("city_roads_gender-", i, ".rds"))))
     if (file.exists(file_location_fixed_geo)) {
@@ -44,6 +43,7 @@ Create_bulk <- function(cities, country) {
       ## This section will need a parameter to introduce different approaches for each country
       city_roads <- genderedstreetnames::Subset_roads(boundary = city_boundary, roads = roads) %>% 
         dplyr::mutate(name_clean = Remove_first_word(name)) 
+
       wiki_street_names <- purrr::map_dfr(.x = city_roads %>% dplyr::pull(name_clean) %>% unique(),
                                           .f = FindGender,
                                           language = "ro",
