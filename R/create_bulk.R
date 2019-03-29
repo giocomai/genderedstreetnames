@@ -30,7 +30,7 @@ Create_bulk <- function(cities, country) {
     file_location_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds"))))
     file_location_not_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_geo", country, paste0("city_roads_gender-", i, ".rds"))))
     if (file.exists(file_location_fixed_geo)) {
-      city_roads_path <- file_location_fixed
+      city_roads_path <- file_location_fixed_geo
     } else if (file.exists(file_location_not_fixed_geo)) {
       warning(paste0("Gender has not been manually checked for ", stringr::str_to_title(i)))
       city_roads_path <- file_location_not_fixed_geo
