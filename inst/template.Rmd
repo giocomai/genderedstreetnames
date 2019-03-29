@@ -9,7 +9,7 @@ output:
 ---
 
 ---
-title: `r paste0("How many streets and squares are dedicated to women in ", params$city, "?")`
+title: `r paste0("How many streets and squares are dedicated to women in ", stringr::str_to_title(params$city), "?")`
 ---
 
 ```{r setup, include=FALSE}
@@ -20,6 +20,7 @@ library("genderedstreetnames")
 
 ```
 
+These are all the streets of `r stringr::str_to_title(params$city)`.
 
 ```{r}
 
@@ -31,6 +32,8 @@ tmap::tm_shape(city_boundary) +
   tmap::tm_shape(city_roads) +
   tmap::tm_lines()
 ```
+
+How many of them are dedicated to women?
 
 ```{r}
 tmap::tmap_mode(mode = "plot")
@@ -44,8 +47,7 @@ city_map
 ```
 
 
-
-Let's have a closer look with an interactive version of this map:
+Here you can have a closer look with an interactive version of the map: 
 
 ```{r}
 tmap::tmap_mode("view")
@@ -61,7 +63,7 @@ tmap::tm_shape(city_boundary) +
                  popup.vars = c("Gender", "Description"))
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 city_roads %>%
   dplyr::arrange(Gender) %>% 
   sf::st_set_geometry(NULL) %>% 

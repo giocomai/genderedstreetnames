@@ -27,42 +27,35 @@ Create_bulk <- function(cities, country) {
 
   for (i in cities) {
     city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
-    file_location_fixed <- normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds")))
-    if (file.exists(file_location_fixed)) {
+    file_location_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds"))))
+    file_location_not_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_geo", country, paste0("city_roads_gender-", i, ".rds"))))
+    if (file.exists(file_location_fixed_geo)) {
       city_roads_path <- file_location_fixed
-    } else if (file.exists(normalizePath(file.path("data", "gendered_street_names", country, paste0("city_roads_gender-", i, ".rds"))))) {
-      city_roads_path <- normalizePath(file.path("data", "gendered_street_names", country, paste0("city_roads_gender-", i, ".rds")))
+    } else if (file.exists(file_location_not_fixed_geo)) {
+      warning(paste0("Gender has not been manually checked for ", stringr::str_to_title(i)))
+      city_roads_path <- file_location_not_fixed_geo
     } else {
       Download_OSM(countries = country)
       
       roads <- Extract_roads(countries = country)
       
       city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
+
+      ## This section will need a parameter to introduce different approaches for each country
+      city_roads <- genderedstreetnames::Subset_roads(boundary = city_boundary, roads = roads) %>% 
+        dplyr::mutate(name_clean = Remove_first_word(name)) 
+      wiki_street_names <- purrr::map_dfr(.x = city_roads %>% dplyr::pull(name_clean) %>% unique(),
+                                          .f = FindGender,
+                                          language = "ro",
+                                          quietly = TRUE)
       
-      if (country=="romania") {
-        city_roads <- genderedstreetnames::Subset_roads(boundary = city_boundary, roads = roads) %>% 
-          dplyr::mutate(name_clean = Remove_first_word(name)) 
-        if (file.exists(file.path("data", "wiki_street_names", country, paste0("wiki_street_names-", country, ".rds")))==FALSE) {
-          wiki_street_names <- purrr::map_dfr(.x = city_roads %>% pull(name_clean) %>% unique(),
-                                              .f = FindGender,
-                                              language = "ro",
-                                              quietly = TRUE)
-          
-          dir.create(path = file.path("data", "wiki_street_names"), showWarnings = FALSE)
-          dir.create(path = file.path("data", "wiki_street_names", "romania"), showWarnings = FALSE)
-          saveRDS(object = wiki_street_names, file = file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
-        } else {
-          wiki_street_names <- readRDS(file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))
-        }
-      }
-    
       city_roads_gender <- city_roads %>% 
         dplyr::left_join(wiki_street_names %>%
                            dplyr::rename(name_clean = Query), by = "name_clean")
-      
-      city_roads_path <- normalizePath(file.path("data", "gendered_street_names", country, paste0("city_roads_gender-", i, ".rds")))
-      
-      saveRDS(object = city_roads, file = city_roads_path)
+      dir.create(file.path("data", "gendered_street_names_geo"), showWarnings = FALSE)
+      dir.create(file.path("data", "gendered_street_names_geo", country), showWarnings = FALSE)
+      saveRDS(object = city_roads_gender, file = file_location_not_fixed_geo)
+      city_roads_path <- file_location_not_fixed_geo
     }
 
     
