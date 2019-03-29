@@ -1,7 +1,7 @@
 ---
 params:
-  city: Sibiu
-  country: Romania
+  city: sibiu
+  country: romania
   city_roads_path: "/home/g/Nextcloud/R_nc/genderedstreetnames/vignettes/data/gendered_street_names_fixed_geo/romania/city_roads_gender_fixed_geo-sibiu.rds"
 output:
   html_document:

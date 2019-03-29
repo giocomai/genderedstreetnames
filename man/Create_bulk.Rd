@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_bulk.R
 \name{Create_bulk}
 \alias{Create_bulk}
-\title{Get city boundaries}
+\title{Creates html pages with maps and basic stats for multiple cities}
 \usage{
 Create_bulk(cities, country)
 }
@@ -15,7 +15,7 @@ Create_bulk(cities, country)
 Nothing, used for its side effects (creates html files with maps and basic text)
 }
 \description{
-Get city boundaries
+Creates html pages with maps and basic stats for multiple cities
 }
 \examples{
 

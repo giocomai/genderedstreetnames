@@ -1,4 +1,4 @@
-#' Get city boundaries 
+#' Creates html pages with maps and basic stats for multiple cities
 #' 
 #' @param cities A character vector of cities located in the same country.
 #' @param country The name of a country. 
@@ -26,6 +26,7 @@ Create_bulk <- function(cities, country) {
   }
 
   for (i in cities) {
+    city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
     file_location_fixed <- normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds")))
     if (file.exists(file_location_fixed)) {
       city_roads_path <- file_location_fixed
@@ -39,8 +40,8 @@ Create_bulk <- function(cities, country) {
       city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
       
       if (country=="romania") {
-        city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>% 
-          mutate(name_clean = Remove_first_word(name)) 
+        city_roads <- genderedstreetnames::Subset_roads(boundary = city_boundary, roads = roads) %>% 
+          dplyr::mutate(name_clean = Remove_first_word(name)) 
         if (file.exists(file.path("data", "wiki_street_names", country, paste0("wiki_street_names-", country, ".rds")))==FALSE) {
           wiki_street_names <- purrr::map_dfr(.x = city_roads %>% pull(name_clean) %>% unique(),
                                               .f = FindGender,
@@ -56,11 +57,12 @@ Create_bulk <- function(cities, country) {
       }
     
       city_roads_gender <- city_roads %>% 
-        left_join(wiki_street_names %>% rename(name_clean = Query), by = "name_clean")
+        dplyr::left_join(wiki_street_names %>%
+                           dplyr::rename(name_clean = Query), by = "name_clean")
       
       city_roads_path <- normalizePath(file.path("data", "gendered_street_names", country, paste0("city_roads_gender-", i, ".rds")))
       
-      saveRDS(object = city_roads_path, file = city_roads_path)
+      saveRDS(object = city_roads, file = city_roads_path)
     }
 
     

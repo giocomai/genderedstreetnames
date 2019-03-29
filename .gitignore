@@ -9,4 +9,3 @@ wikidata
 .Rbuildignore
 temp.R
 temp2.R
-data
