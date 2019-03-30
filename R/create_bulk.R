@@ -5,7 +5,7 @@
 #' @return Nothing, used for its side effects (creates html files with maps and basic text)
 #' @examples
 #' 
-#' Create_bulk(cities = c("Sibiu", "Timișoara"), country = "Romania")
+#' Create_bulk(cities = c("Sibiu", "Alba Iulia"), country = "Romania")
 #' 
 #' @export
 #' 
