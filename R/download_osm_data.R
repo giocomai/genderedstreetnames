@@ -121,6 +121,8 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 #' 
 #' @param city The name of a city/municipality.
 #' @param country The name of the country. Requested to ensure correct identification of city. 
+#' @param administrative Defaults to NULL. If TRUE, filters only boundaries recorded as administrative. For more information, see: https://wiki.openstreetmap.org/wiki/Tag%3aboundary=administrative
+#' @param admin_level Defaults to 6. For more information see: https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative#10_admin_level_values_for_specific_countries
 #' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
 #' @return An sf polygon.
 #' @examples
@@ -130,21 +132,29 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 #' @export
 #' 
 
-Get_city_boundaries <- function(city, country, cache = TRUE) {
+Get_city_boundaries <- function(city, country, admin_level = 6, administrative = NULL, cache = TRUE) {
   query <- paste(city, country, sep = ", ")
   
   dir.create(path = "data", showWarnings = FALSE)
   dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
   dir.create(path = file.path("data", "city_boundaries",  tolower(country)), showWarnings = FALSE)
-  
+
   file_location <- file.path("data", "city_boundaries", tolower(country), paste0(tolower(city), ".rds"))
   if(file.exists(file_location)==FALSE) {
-    city_boundary <- osmdata::opq(bbox = query) %>% 
-      osmdata::add_osm_feature(key = "boundary", value = "administrative") %>% 
-      osmdata::add_osm_feature(key = "admin_level", value = "6") %>% 
-      osmdata::add_osm_feature(key = "place", value = "city") %>% 
-      osmdata::osmdata_sf() %>% 
-      .$osm_polygons
+    if (is.null(administrative)) {
+      city_boundary <- osmdata::opq(bbox = query) %>% 
+        osmdata::add_osm_feature(key = "admin_level", value = admin_level) %>% 
+        osmdata::add_osm_feature(key = "place", value = "city") %>% 
+        osmdata::osmdata_sf() %>% 
+        .$osm_polygons
+    } else {
+      city_boundary <- osmdata::opq(bbox = query) %>% 
+        osmdata::add_osm_feature(key = "boundary", value = "administrative") %>% 
+        osmdata::add_osm_feature(key = "admin_level", value = admin_level) %>% 
+        osmdata::add_osm_feature(key = "place", value = "city") %>% 
+        osmdata::osmdata_sf() %>% 
+        .$osm_polygons
+    }
     if (cache == TRUE) {
       dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
       saveRDS(object = city_boundary, file = file_location)
@@ -154,6 +164,41 @@ Get_city_boundaries <- function(city, country, cache = TRUE) {
   }
   return(city_boundary)
 }
+
+
+#' Get boundary by id
+#' 
+#' @param id A numeric vector of length 1, must correspond to the id of a boundary object on OpenStreetMap. 
+#' @param type Defaults to "way".
+#' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
+#' @return An sf polygon.
+#' @examples
+#' 
+#' Get_boundary_by_id(id = c(Arad = 45422208))
+#' 
+#' @export
+#' 
+Get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
+  dir.create(path = "data", showWarnings = FALSE)
+  dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+  dir.create(path = file.path("data", "city_boundaries",  "by_id"), showWarnings = FALSE)
+  
+  file_location <- file.path("data", "city_boundaries", "by_id", paste0(tolower("by_id"), ".rds"))
+  if(file.exists(file_location)==FALSE) {
+    city_boundary <-  osmdata::opq_osm_id (type = type, id = id) %>%
+      osmdata::opq_string () %>%
+      osmdata::osmdata_sf () %>% .$osm_polygons 
+    if (cache == TRUE) {
+      dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+      saveRDS(object = city_boundary, file = file_location)
+    }
+  } else {
+    city_boundary <- readRDS(file = file_location)
+  }
+  return(city_boundary)
+}
+  
+  
 
 #' Keep only roads within a given boundary.
 #' 

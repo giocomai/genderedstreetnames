@@ -4,12 +4,17 @@
 \alias{Get_city_boundaries}
 \title{Get city boundaries}
 \usage{
-Get_city_boundaries(city, country, cache = TRUE)
+Get_city_boundaries(city, country, admin_level = 6,
+  administrative = NULL, cache = TRUE)
 }
 \arguments{
 \item{city}{The name of a city/municipality.}
 
 \item{country}{The name of the country. Requested to ensure correct identification of city.}
+
+\item{admin_level}{Defaults to 6. For more information see: https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative#10_admin_level_values_for_specific_countries}
+
+\item{administrative}{Defaults to NULL. If TRUE, filters only boundaries recorded as administrative. For more information, see: https://wiki.openstreetmap.org/wiki/Tag%3aboundary=administrative}
 
 \item{cache}{Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds}
 }
