@@ -19,6 +19,6 @@ Creates html pages with maps and basic stats for multiple cities
 }
 \examples{
 
-Create_bulk(cities = c("Sibiu", "Timișoara"), country = "Romania")
+Create_bulk(cities = c("Sibiu", "Alba Iulia"), country = "Romania")
 
 }

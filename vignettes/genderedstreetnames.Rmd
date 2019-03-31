@@ -96,21 +96,21 @@ street_names <- roads %>%
 head(street_names)
 ```
 
-Now we are ready to feed the street names into Wikidata and see if it can reliably extract street names. The language parameter sets in which version of Wikidata the query is run, as results vary. Let's try first with a single name:
+Now we are ready to feed the street names into Wikidata and see if it can reliably determine to whom a given street or square is dedicated and their gender. The language parameter sets in which version of Wikidata the query is run, as results vary. Let's try first with a single name:
 
 ```{r}
-FindGender(search = "Mircea Eliade", language = "ro")
+Find_gender(search = "Mircea Eliade", language = "ro")
 ```
 
 Mircea Eliade is correctly identified as a male writer. What this function does in the background is look for "Mircea Eliade" on Wikidata (which stores metadata of Wikipedia pages), get the resulting entity on the database - which can be seen at this link  https://www.wikidata.org/wiki/Q41590 - and extract the "sex or gender" field.
 
-By default, the function `FindGender` caches queries and results locally and waits a fraction of a second between each query, reducing the load on Wikidata's server and speeding up the process for following runs. This also means that if you run this command with a long list of queries, you can interrupt the process and start it again in another session without effectively restarting anew.
+By default, the function `Find_gender` caches queries and results locally and waits a fraction of a second between each query, reducing the load on Wikidata's server and speeding up the process for following runs. This also means that if you run this command with a long list of queries, you can interrupt the process and start it again in another session without effectively restarting anew.
 
 Here is the output of querying the beginning of our dataset:
 
 ```{r}
 purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% head(),
-               .f = FindGender,
+               .f = Find_gender,
                language = "ro")
 ```
 
@@ -120,7 +120,7 @@ We can now process the whole dataset. Since this process is time consuming, it m
 ```{r eval = TRUE}
 if (file.exists(file.path("data", "wiki_street_names", "romania", "wiki_street_names-romania.rds"))==FALSE) {
   wiki_street_names <- purrr::map_dfr(.x = street_names %>% pull(name_clean) %>% unique(),
-                                    .f = FindGender,
+                                    .f = Find_gender,
                                     language = "ro",
                                     quietly = TRUE)
 

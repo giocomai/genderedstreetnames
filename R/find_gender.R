@@ -11,13 +11,13 @@
 #' @return A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID
 #' @examples
 #' 
-#' FindGender(search = "Garibaldi", language = "it")
+#' Find_gender(search = "Garibaldi", language = "it")
 #' 
 #' @export
 #' 
 
 
-FindGender <- function(search,
+Find_gender <- function(search,
                        language = "en",
                        description_language = "en",
                        cache = TRUE,
@@ -32,13 +32,13 @@ FindGender <- function(search,
     }
     
     if (cache==TRUE) {
-      dir.create(path = "wikidata", showWarnings = FALSE)
-      dir.create(path = file.path("wikidata", "search"), showWarnings = FALSE)
-      dir.create(path = file.path("wikidata", "search", language), showWarnings = FALSE)
-      dir.create(path = file.path("wikidata", "item"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "wikidata"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "wikidata", "search"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "wikidata", "search", language), showWarnings = FALSE)
+      dir.create(path = file.path("data", "wikidata", "item"), showWarnings = FALSE)
     }
     # search term
-    search_response_location <- file.path("wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
+    search_response_location <- file.path("data", "wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
     if (file.exists(search_response_location)==FALSE) {
       if (only_cached==TRUE) {
         return(NULL)
@@ -53,7 +53,7 @@ FindGender <- function(search,
     }
     # search among results to find person
     for (i in seq_along(search_response)) {
-      item_response_location <- file.path("wikidata", "item", paste0(search_response[[i]]$id, ".rds"))
+      item_response_location <- file.path("data", "wikidata", "item", paste0(search_response[[i]]$id, ".rds"))
       if (file.exists(item_response_location)==FALSE) {
         item <- tryCatch(WikidataR::get_item(id = search_response[[i]]$id), error = function(e) return(tibble::tibble(Query = search, Gender = NA, Description = NA, WikidataID = NA)))
         saveRDS(object = item, file = item_response_location)

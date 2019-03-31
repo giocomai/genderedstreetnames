@@ -46,7 +46,7 @@ Create_bulk <- function(cities, country) {
         dplyr::mutate(name_clean = Remove_first_word(name)) 
 
       wiki_street_names <- purrr::map_dfr(.x = city_roads %>% dplyr::pull(name_clean) %>% unique(),
-                                          .f = FindGender,
+                                          .f = Find_gender,
                                           language = "ro",
                                           quietly = TRUE)
       
