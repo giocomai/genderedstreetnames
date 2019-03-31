@@ -139,7 +139,7 @@ Get_city_boundaries <- function(city, country, admin_level = 6, administrative =
   dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
   dir.create(path = file.path("data", "city_boundaries",  tolower(country)), showWarnings = FALSE)
 
-  file_location <- file.path("data", "city_boundaries", tolower(country), paste0(tolower(city), ".rds"))
+  file_location <- file.path("data", "city_boundaries", tolower(country), paste0(tolower(iconv(x = city, to = "ASCII//TRANSLIT")), ".rds"))
   if(file.exists(file_location)==FALSE) {
     if (is.null(administrative)) {
       city_boundary <- osmdata::opq(bbox = query) %>% 

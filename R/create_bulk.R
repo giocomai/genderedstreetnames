@@ -27,8 +27,8 @@ Create_bulk <- function(cities, country) {
   }
 
   for (i in cities) {
-    file_location_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", i, ".rds"))))
-    file_location_not_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_geo", country, paste0("city_roads_gender-", i, ".rds"))))
+    file_location_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_fixed_geo", country, paste0("city_roads_gender_fixed_geo-", iconv(x = i, to = "ASCII//TRANSLIT"), ".rds"))))
+    file_location_not_fixed_geo <- suppressWarnings(normalizePath(file.path("data", "gendered_street_names_geo", country, paste0("city_roads_gender-", iconv(x = i, to = "ASCII//TRANSLIT"), ".rds"))))
     if (file.exists(file_location_fixed_geo)) {
       city_roads_path <- file_location_fixed_geo
     } else if (file.exists(file_location_not_fixed_geo)) {
@@ -65,7 +65,7 @@ Create_bulk <- function(cities, country) {
                         country = country, 
                         city_roads_path = normalizePath(city_roads_path)
                       ),
-                      output_file = paste0(i,".html"),
+                      output_file = paste0(iconv(x = i, to = "ASCII//TRANSLIT"),".html"),
                       output_dir = file.path("html", country))
   }
   

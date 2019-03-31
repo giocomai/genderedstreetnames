@@ -38,7 +38,7 @@ Find_gender <- function(search,
       dir.create(path = file.path("data", "wikidata", "item"), showWarnings = FALSE)
     }
     # search term
-    search_response_location <- file.path("data", "wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = search), ".rds"))
+    search_response_location <- file.path("data", "wikidata", "search", language, paste0(gsub(pattern = "/", replacement = "_", x = iconv(x = search, to = "ASCII//TRANSLIT")), ".rds"))
     if (file.exists(search_response_location)==FALSE) {
       if (only_cached==TRUE) {
         return(NULL)
