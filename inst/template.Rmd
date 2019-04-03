@@ -55,7 +55,7 @@ city_map
 
 Here you can have a closer look with an interactive version of the map: 
 
-```{r}
+```{r InteractiveCityMap}
 tmap::tmap_mode(mode = "view")
 
 city_map_interactive <- tmap::tm_shape(city_boundary) + 
@@ -67,10 +67,13 @@ city_map_interactive <- tmap::tm_shape(city_boundary) +
                  textNA = "other",
                  id = "name",
                  popup.vars = c("Gender", "Description"))
-city_map_interactive
+
+tmap::tmap_leaflet(city_map_interactive)
 ```
 
-```{r message=FALSE, warning=FALSE}
+Here are all the streets in `r stringr::str_to_title(params$city)`:
+
+```{r CityStreetsTable, message=FALSE, warning=FALSE}
 city_roads %>%
   dplyr::arrange(Gender) %>% 
   sf::st_set_geometry(NULL) %>% 
