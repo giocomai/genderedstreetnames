@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
-
+library("rvest")
+library("tidyverse")
 if (file.exists("cities.rds")==FALSE) {
 cities <- ro_county_seats <- xml2::read_html(x = "https://en.wikipedia.org/wiki/Counties_of_Romania") %>% 
   rvest::html_table(fill = TRUE) %>%
@@ -36,7 +37,7 @@ saveRDS(object = cities, file = "cities.rds")
 
 
 ```{r}
-Create_bulk(cities = c("Sibiu", "Timișoara"), country = "Romania")
+Create_bulk(cities = cities, country = "Romania")
 
 ```
 

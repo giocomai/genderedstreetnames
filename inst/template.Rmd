@@ -2,7 +2,7 @@
 params:
   city: sibiu
   country: romania
-  city_roads_path: "/home/g/Nextcloud/R_nc/genderedstreetnames/vignettes/data/gendered_street_names_fixed_geo/romania/city_roads_gender_fixed_geo-sibiu.rds"
+  city_roads_path: "data/gendered_street_names_fixed_geo/romania/city_roads_gender_fixed_geo-sibiu.rds"
 output:
   html_document:
     self_contained: true
@@ -23,14 +23,20 @@ library("genderedstreetnames")
 These are all the streets of `r stringr::str_to_title(params$city)`.
 
 ```{r}
-
 city_roads <- readRDS(file = params$city_roads_path)
+```
+
+
+```{r}
+tmap::tmap_mode(mode = "plot")
 city_boundary <- Get_city_boundaries(city = params$city, country = params$country, cache = TRUE)
 
-tmap::tm_shape(city_boundary) + 
+all_streets_city_map <- tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() +
   tmap::tm_shape(city_roads) +
   tmap::tm_lines()
+
+all_streets_city_map
 ```
 
 How many of them are dedicated to women?
@@ -50,9 +56,9 @@ city_map
 Here you can have a closer look with an interactive version of the map: 
 
 ```{r}
-tmap::tmap_mode("view")
+tmap::tmap_mode(mode = "view")
 
-tmap::tm_shape(city_boundary) + 
+city_map_interactive <- tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons(col = "lightblue", alpha = 0.2, popup.vars = FALSE) +
   tmap::tm_shape(city_roads) +
   tmap::tm_lines(col = "Gender",
@@ -61,6 +67,7 @@ tmap::tm_shape(city_boundary) +
                  textNA = "other",
                  id = "name",
                  popup.vars = c("Gender", "Description"))
+city_map_interactive
 ```
 
 ```{r message=FALSE, warning=FALSE}
