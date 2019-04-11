@@ -155,9 +155,13 @@ get_city_boundaries <- function(city, country, admin_level = 6, administrative =
         osmdata::osmdata_sf() %>% 
         .$osm_polygons
     }
-    if (cache == TRUE) {
-      dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
-      saveRDS(object = city_boundary, file = file_location)
+    if (is.null(city_boundary)) {
+      usethis::ui_oops("City boundary not found.")
+    } else {
+      if (cache == TRUE) {
+        dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
+        saveRDS(object = city_boundary, file = file_location)
+      }
     }
   } else {
     city_boundary <- readRDS(file = file_location)
