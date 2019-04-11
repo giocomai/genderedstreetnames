@@ -182,18 +182,42 @@ get_city_boundaries <- function(city, country, admin_level = 6, administrative =
 #' 
 #' @export
 #' 
-get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
-  fs::dir_create(path = file.path("data", "city_boundaries",  "by_id"), recursive = TRUE)
+get_boundary_by_id <- function(id,
+                               type = "way",
+                               cache = TRUE) {
+  fs::dir_create(path = file.path("data", "city_boundaries",  "by_id"),
+                 recursive = TRUE)
   
-  file_location <- file.path("data", "city_boundaries", "by_id", paste0(id, ".rds"))
+  if (is.numeric(id)==TRUE) {
+    query_by_id <- genderedstreetnames::create_city_boundary_id_combo(id = id, type = type)
+  } else if (class(id)=="list") {
+    query_by_id <- id
+  } else if (is.na(as.numeric(id)==FALSE)) {
+    query_by_id <- genderedstreetnames::create_city_boundary_id_combo(id = as.numeric(id), type = type)
+  } else {
+    stop("Wrong id format. `id` must be an integer or an object created with `create_city_boundary_id_combo()`.")
+  }
+  
+  file_location <- file.path("data", "city_boundaries", "by_id", paste0(tolower(query_by_id$type), "-", query_by_id$id, ".rds"))
+  
   if(file.exists(file_location)==FALSE) {
-    city_boundary <-  osmdata::opq_osm_id (type = type, id = id) %>%
-      osmdata::opq_string () %>%
-      osmdata::osmdata_sf () %>%
-      .$osm_polygons 
+    temp <- osmdata::opq_osm_id(type = query_by_id$type,
+                                id = query_by_id$id) %>%
+      osmdata::opq_string() %>%
+      osmdata::osmdata_sf()
+    
+    if (is.null(temp$osm_polygons)==FALSE) {
+      city_boundary <- temp$osm_polygons
+    } else if (is.null(temp$osm_multipolygons)==FALSE) {
+      city_boundary <- temp$osm_multipolygons
+    }
+       
     if (cache == TRUE) {
-      dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
       saveRDS(object = city_boundary, file = file_location)
+      if (is.null(query_by_id$city)==FALSE&is.null(query_by_id$country)==FALSE) {
+        file_city_location <- file.path("data", "city_boundaries", tolower(query_by_id$country), paste0(tolower(iconv(x = query_by_id$city, to = "ASCII//TRANSLIT")), ".rds"))
+        saveRDS(object = city_boundary, file = file_city_location)
+      }
     }
   } else {
     city_boundary <- readRDS(file = file_location)
@@ -206,18 +230,35 @@ get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
 #' @param id A numeric vector of length 1, must correspond to the id of a boundary object on OpenStreetMap. 
 #' @param city The name of a city/municipality.
 #' @param country The name of the country. Requested to ensure correct identification of city. 
+#' @param type One of either "way", "relation", or "node". 
 #' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
 #' @return A list, typically to be fed into `get_boundary_by_id()``
 #' @examples
 #' 
-#' create_city_boundary_id_combo(city = "Arad", country = "Romania", id = 45422208)
+#' create_city_boundary_id_combo(id = 45422208, type = "way", city = "Arad", country = "Romania")
+#' 
+#' # https://www.openstreetmap.org/relation/46663 
+#' create_city_boundary_id_combo(id = 46663, type = "relation", city = "Trento", country = "Italy", )
 #' 
 #' @export  
-create_city_boundary_id_combo <- function(city, country, id, cache = TRUE) {
-  combo <- list(city = city, country = country, id = as.numeric(id))
+create_city_boundary_id_combo <- function(id,
+                                          type,
+                                          city = NULL,
+                                          country = NULL,
+                                          cache = TRUE) {
+  combo <- list(city = city,
+                country = country,
+                id = as.numeric(id),
+                type = type)
   if (cache==TRUE) {
-    fs::dir_create(path = file.path("data", "city_boundary_id_combo", country), recursive = TRUE)
-    saveRDS(object = combo, file = file.path("data", "city_boundary_id_combo", country, paste0(city, ".rds")))
+    fs::dir_create(path = file.path("data", "city_boundary_id_combo", country),
+                   recursive = TRUE)
+    saveRDS(object = combo,
+            file = file.path("data",
+                             "city_boundary_id_combo",
+                             country,
+                             paste0(tolower(iconv(x = city, to = "ASCII//TRANSLIT")),
+                                    ".rds")))
   }
   return(combo)
 }

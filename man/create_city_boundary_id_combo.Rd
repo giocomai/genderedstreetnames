@@ -4,14 +4,17 @@
 \alias{create_city_boundary_id_combo}
 \title{Create a city/id combination for proper caching}
 \usage{
-create_city_boundary_id_combo(city, country, id, cache = TRUE)
+create_city_boundary_id_combo(id, type, city = NULL, country = NULL,
+  cache = TRUE)
 }
 \arguments{
+\item{id}{A numeric vector of length 1, must correspond to the id of a boundary object on OpenStreetMap.}
+
+\item{type}{One of either "way", "relation", or "node".}
+
 \item{city}{The name of a city/municipality.}
 
 \item{country}{The name of the country. Requested to ensure correct identification of city.}
-
-\item{id}{A numeric vector of length 1, must correspond to the id of a boundary object on OpenStreetMap.}
 
 \item{cache}{Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds}
 }
@@ -23,6 +26,9 @@ Create a city/id combination for proper caching
 }
 \examples{
 
-create_city_boundary_id_combo(city = "Arad", country = "Romania", id = 45422208)
+create_city_boundary_id_combo(id = 45422208, type = "way", city = "Arad", country = "Romania")
+
+# https://www.openstreetmap.org/relation/46663 
+create_city_boundary_id_combo(id = 46663, type = "relation", city = "Trento", country = "Italy", )
 
 }
