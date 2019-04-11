@@ -5,12 +5,12 @@
 #' @return Nothing, used for its side effects (creates html files with maps and basic text)
 #' @examples
 #' 
-#' Create_bulk(cities = c("Sibiu", "Alba Iulia"), country = "Romania")
+#' create_bulk(cities = c("Sibiu", "Alba Iulia"), country = "Romania")
 #' 
 #' @export
 #' 
 
-Create_bulk <- function(cities, country) {
+create_bulk <- function(cities, country) {
   cities <- tolower(cities)
   country <- tolower(country)
   
@@ -35,9 +35,9 @@ Create_bulk <- function(cities, country) {
       warning(paste0("Gender has not been manually checked for ", stringr::str_to_title(i)))
       city_roads_path <- file_location_not_fixed_geo
     } else {
-      Download_OSM(countries = country)
+      download_OSM(countries = country)
       
-      roads <- Extract_roads(countries = country)
+      roads <- extract_roads(countries = country)
       
       city_boundary <- get_city_boundaries(city = i, country = country, cache = TRUE)
 

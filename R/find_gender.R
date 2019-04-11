@@ -11,13 +11,13 @@
 #' @return A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID
 #' @examples
 #' 
-#' Find_gender(search = "Garibaldi", language = "it")
+#' find_gender(search = "Garibaldi", language = "it")
 #' 
 #' @export
 #' 
 
 
-Find_gender <- function(search,
+find_gender <- function(search,
                        language = "en",
                        description_language = "en",
                        cache = TRUE,

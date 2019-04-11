@@ -17,7 +17,8 @@ Imports:
     purrr,
     osmdata,
     tmap,
-    usethis
+    usethis,
+    fs
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

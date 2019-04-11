@@ -5,12 +5,12 @@
 #' @return Used only for its side effects (downloads osm data).
 #' @examples
 #' 
-#' Download_OSM(search = "Romania")
+#' download_OSM(search = "Romania")
 #' 
 #' @export
 #' 
 
-Download_OSM <- function(countries, continent = "Europe") {
+download_OSM <- function(countries, continent = "Europe") {
   countries <- tolower(countries)
   continent <- tolower(continent)
   
@@ -56,12 +56,12 @@ Download_OSM <- function(countries, continent = "Europe") {
 #' @return A data.frame with geographic data (sf).
 #' @examples
 #' 
-#' Extract_roads(search = "Romania")
+#' extract_roads(search = "Romania")
 #' 
 #' @export
 #' 
 
-Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
+extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
   dir.create(path = file.path("data", "roads_shp"), showWarnings = FALSE)
   countries <- tolower(countries)
   
@@ -89,7 +89,7 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
     } else {
       file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
       if (file.exists(file_location) == FALSE) {
-        warning(paste0("File not available. Please download the data first with `Download_OSM('", i, "')`" ))
+        warning(paste0("File not available. Please download the data first with `download_OSM('", i, "')`" ))
       } else {
         files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
           tibble::as_tibble() %>% 
@@ -178,20 +178,19 @@ get_city_boundaries <- function(city, country, admin_level = 6, administrative =
 #' @return An sf polygon.
 #' @examples
 #' 
-#' Get_boundary_by_id(id = c(Arad = 45422208))
+#' get_boundary_by_id(id = c(Arad = 45422208))
 #' 
 #' @export
 #' 
-Get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
-  dir.create(path = "data", showWarnings = FALSE)
-  dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
-  dir.create(path = file.path("data", "city_boundaries",  "by_id"), showWarnings = FALSE)
+get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
+  fs::dir_create(path = file.path("data", "city_boundaries",  "by_id"), recursive = TRUE)
   
-  file_location <- file.path("data", "city_boundaries", "by_id", paste0(tolower("by_id"), ".rds"))
+  file_location <- file.path("data", "city_boundaries", "by_id", paste0(id, ".rds"))
   if(file.exists(file_location)==FALSE) {
     city_boundary <-  osmdata::opq_osm_id (type = type, id = id) %>%
       osmdata::opq_string () %>%
-      osmdata::osmdata_sf () %>% .$osm_polygons 
+      osmdata::osmdata_sf () %>%
+      .$osm_polygons 
     if (cache == TRUE) {
       dir.create(path = file.path("data", "city_boundaries"), showWarnings = FALSE)
       saveRDS(object = city_boundary, file = file_location)
@@ -201,8 +200,27 @@ Get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
   }
   return(city_boundary)
 }
-  
-  
+
+#' Create a city/id combination for proper caching
+#' 
+#' @param id A numeric vector of length 1, must correspond to the id of a boundary object on OpenStreetMap. 
+#' @param city The name of a city/municipality.
+#' @param country The name of the country. Requested to ensure correct identification of city. 
+#' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
+#' @return A list, typically to be fed into `get_boundary_by_id()``
+#' @examples
+#' 
+#' create_city_boundary_id_combo(city = "Arad", country = "Romania", id = 45422208)
+#' 
+#' @export  
+create_city_boundary_id_combo <- function(city, country, id, cache = TRUE) {
+  combo <- list(city = city, country = country, id = as.numeric(id))
+  if (cache==TRUE) {
+    fs::dir_create(path = file.path("data", "city_boundary_id_combo", country), recursive = TRUE)
+    saveRDS(object = combo, file = file.path("data", "city_boundary_id_combo", country, paste0(city, ".rds")))
+  }
+  return(combo)
+}
 
 #' Keep only roads within a given boundary.
 #' 

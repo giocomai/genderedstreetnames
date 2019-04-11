@@ -63,7 +63,7 @@ The following command downloads the shapefile for all OpenStreetMap data related
 
 ```{r}
 
-Download_OSM(countries = "Romania")
+download_OSM(countries = "Romania")
 
 ```
 
@@ -72,7 +72,7 @@ To process data further, files related to roads need to be extracted from the zi
 Here you can see a preview of the data imported from OpenStreetMap on all streets in Romania:
 
 ```{r}
-roads <- Extract_roads(countries = "Romania")
+roads <- extract_roads(countries = "Romania")
 head(roads)
 ```
 
@@ -99,7 +99,7 @@ head(street_names)
 Now we are ready to feed the street names into Wikidata and see if it can reliably determine to whom a given street or square is dedicated and their gender. The language parameter sets in which version of Wikidata the query is run, as results vary. Let's try first with a single name:
 
 ```{r}
-Find_gender(search = "Mircea Eliade", language = "ro")
+find_gender(search = "Mircea Eliade", language = "ro")
 ```
 
 Mircea Eliade is correctly identified as a male writer. What this function does in the background is look for "Mircea Eliade" on Wikidata (which stores metadata of Wikipedia pages), get the resulting entity on the database - which can be seen at this link  https://www.wikidata.org/wiki/Q41590 - and extract the "sex or gender" field.
@@ -202,7 +202,7 @@ saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_na
 ```
 
 ```{r eval=FALSE}
-Fix_street_names(city = "Sibiu", country = "Romania")
+fix_street_names(city = "Sibiu", country = "Romania")
 ```
 
 
