@@ -4,11 +4,11 @@
 #' @return A character string. 
 #' @examples
 #' 
-#' Remove_first_word(string = "via Garibaldi")
+#' remove_first_word(string = "via Garibaldi")
 #' 
 #' @export
 #' 
 
-Remove_first_word <- function(string) {
+remove_first_word <- function(string) {
   stringr::str_squish(string = stringr::str_remove(string = string, pattern = "\\w+"))
 }

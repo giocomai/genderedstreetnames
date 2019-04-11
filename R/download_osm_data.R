@@ -127,12 +127,12 @@ Extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 #' @return An sf polygon.
 #' @examples
 #' 
-#' Get_city_boundaries(search = "Sibiu, Romania")
+#' get_city_boundaries(search = "Sibiu, Romania")
 #' 
 #' @export
 #' 
 
-Get_city_boundaries <- function(city, country, admin_level = 6, administrative = NULL, cache = TRUE) {
+get_city_boundaries <- function(city, country, admin_level = 6, administrative = NULL, cache = TRUE) {
   query <- paste(city, country, sep = ", ")
   
   dir.create(path = "data", showWarnings = FALSE)
@@ -202,15 +202,15 @@ Get_boundary_by_id <- function(id, type = "way", cache = TRUE) {
 
 #' Keep only roads within a given boundary.
 #' 
-#' @param boundary An object typically created with `Get_city_boundaries()`
+#' @param boundary An object typically created with `get_city_boundaries()`
 #' @param country The name of the country. Requested to ensure correct identification of city. 
 #' @return A data frame of the sf class including all roads insidet the given boundary
 #' @examples
 #' 
-#' Subset_roads(city_boundary, roads)
+#' subset_roads(city_boundary, roads)
 #' 
 #' @export
 #' 
-Subset_roads <- function(boundary, roads) {
+subset_roads <- function(boundary, roads) {
   roads[sf::st_within(roads, boundary) %>% lengths > 0,]
 }

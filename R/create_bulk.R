@@ -39,10 +39,10 @@ Create_bulk <- function(cities, country) {
       
       roads <- Extract_roads(countries = country)
       
-      city_boundary <- Get_city_boundaries(city = i, country = country, cache = TRUE)
+      city_boundary <- get_city_boundaries(city = i, country = country, cache = TRUE)
 
       ## This section will need a parameter to introduce different approaches for each country
-      city_roads <- genderedstreetnames::Subset_roads(boundary = city_boundary, roads = roads) %>% 
+      city_roads <- genderedstreetnames::subset_roads(boundary = city_boundary, roads = roads) %>% 
         dplyr::mutate(name_clean = Remove_first_word(name)) 
 
       wiki_street_names <- purrr::map_dfr(.x = city_roads %>% dplyr::pull(name_clean) %>% unique(),

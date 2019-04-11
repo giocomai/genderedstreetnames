@@ -91,7 +91,7 @@ In the case of Romania, it is quite easy to deal with this issue, as it suffices
 ```{r}
 street_names <- roads %>% 
   st_set_geometry(NULL) %>% 
-  transmute(name, name_clean = Remove_first_word(name))
+  transmute(name, name_clean = remove_first_word(name))
 
 head(street_names)
 ```
@@ -141,7 +141,7 @@ Let's try with a single city, then see how to expand this to more.
 For a start, we need the borders of the municipality we want to focus on. Let's take the city of Sibiu, in Transylvania. This is how the borders of the municipality look:
 
 ```{r}
-city_boundary <- Get_city_boundaries(city = "Sibiu", country = "Romania")
+city_boundary <- get_city_boundaries(city = "Sibiu", country = "Romania")
 
 tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() 
@@ -150,7 +150,7 @@ tmap::tm_shape(city_boundary) +
 We can query our dataset, and find out which of all the streets and squares in Romania are located within the municipality of Sibiu. These are all the streets located in the municipality of Sibiu:
 
 ```{r}
-city_roads <- Subset_roads(boundary = city_boundary, roads = roads)
+city_roads <- subset_roads(boundary = city_boundary, roads = roads)
 
 tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() +
@@ -161,8 +161,8 @@ tmap::tm_shape(city_boundary) +
 Which of these streets are dedicated to women? Let's have a look
 
 ```{r}
-city_roads <- Subset_roads(boundary = city_boundary, roads = roads) %>% 
-  mutate(name_clean = Remove_first_word(name)) %>% 
+city_roads <- subset_roads(boundary = city_boundary, roads = roads) %>% 
+  mutate(name_clean = remove_first_word(name)) %>% 
   left_join(wiki_street_names %>% rename(name_clean = Query), by = "name_clean")
 
 

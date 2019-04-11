@@ -25,7 +25,7 @@ These are all the streets of `r stringr::str_to_title(params$city)`.
 ```{r}
 
 city_roads <- readRDS(file = params$city_roads_path)
-city_boundary <- Get_city_boundaries(city = params$city, country = params$country, cache = TRUE)
+city_boundary <- get_city_boundaries(city = params$city, country = params$country, cache = TRUE)
 
 tmap::tm_shape(city_boundary) + 
   tmap::tm_polygons() +
