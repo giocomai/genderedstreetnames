@@ -56,7 +56,7 @@ Create_bulk <- function(cities, country) {
       dir.create(file.path("data", "gendered_street_names_geo"), showWarnings = FALSE)
       dir.create(file.path("data", "gendered_street_names_geo", country), showWarnings = FALSE)
       saveRDS(object = city_roads_gender, file = file_location_not_fixed_geo)
-      city_roads_path <- file_location_not_fixed_geo
+      city_roads_path <- normalizePath(file_location_not_fixed_geo)
     }
    
     rmarkdown::render(input = system.file("template.Rmd", package = "genderedstreetnames"),
