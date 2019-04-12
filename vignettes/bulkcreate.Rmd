@@ -20,7 +20,7 @@ It is possible to create automatically reports for multiple cities:
 
 
 ```{r eval=FALSE}
-Create_bulk(cities = c("Alba Iulia", "Sibiu", "Cluj-Napoca"), country = "Romania")
+create_bulk(cities = c("Alba Iulia", "Sibiu", "Cluj-Napoca"), country = "Romania")
 
 ```
 This command creates html files for each city inside the folder `html/country`
@@ -28,8 +28,8 @@ This command creates html files for each city inside the folder `html/country`
 
 It is strongly advised to manually check and fix the automatic categorisation city by city, as there are almost always a few mistakes.
 
-```{r}
-Fix_street_names(city = "Sibiu", country = "Romania")
+```{r eval = FALSE}
+fix_street_names(city = "Sibiu", country = "Romania")
 ```
 
-Afterwards, you should delete the previously created html files, and re-run the `Create_bulk()` command. 
+Afterwards, you should delete the previously created html files, and re-run the `create_bulk()` command. 
