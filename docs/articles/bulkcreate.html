@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>genderedstreetnames • genderedstreetnames</title>
+<title>Bulk create reports with maps highlighting gendered street names • genderedstreetnames</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="genderedstreetnames">
-<meta property="og:description" content="Automatically find the gender of street names, manually fix what the automatic part got wrong.">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Bulk create reports with maps highlighting gendered street names">
+<meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -29,7 +29,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">genderedstreetnames</a>
+        <a class="navbar-link" href="../index.html">genderedstreetnames</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
@@ -37,16 +37,16 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="articles/genderedstreetnames.html">Get started</a>
+  <a href="../articles/genderedstreetnames.html">Get started</a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -56,7 +56,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/bulkcreate.html">Bulk create reports with maps highlighting gendered street names</a>
+      <a href="../articles/bulkcreate.html">Bulk create reports with maps highlighting gendered street names</a>
     </li>
   </ul>
 </li>
@@ -72,44 +72,28 @@
       
       </header><div class="row">
   <div class="col-md-9 contents">
-    
+    <div class="page-header toc-ignore">
+      <h1>Bulk create reports with maps highlighting gendered street names</h1>
+                        <h4 class="author">Giorgio Comai</h4>
+            
+            <h4 class="date">2019-04-12</h4>
+      
+      
+      <div class="hidden name"><code>bulkcreate.Rmd</code></div>
+
+    </div>
 
     
     
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-<div id="genderedstreetnames" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#genderedstreetnames" class="anchor"></a>genderedstreetnames</h1></div>
-<p>The goal of <code>genderedstreetnames</code> is to automatically find the gender of street names, manually fix what the automatic part got wrong, and plot the result.</p>
-<p>This is a work in progress.</p>
-<p>There is currently a vignette showing examples of what can be done with this package on the <a href="https://giocomai.github.io/genderedstreetnames/articles/genderedstreetnames.html">package’s website</a>.</p>
-<p>If you use this package for articles/blog posts/anything else, please include a reference to the author and to <a href="http://europeandatajournalism.eu/">EDJNet</a>:</p>
-<p><a href="http://giorgiocomai.eu/">Giorgio Comai</a>/<a href="http://balcanicaucaso.org/">OBCT</a>/<a href="http://europeandatajournalism.eu/">EDJNet</a></p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>This package is currently available on GitHub.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/remotes/topics/install_github">install_github</a></span>(<span class="st">"giocomai/genderedstreetnames"</span>)</a></code></pre></div>
-<p>Follow the instructions in the vignette for details and examples of outputs.</p>
-</div>
-</div>
+<p>It is possible to create automatically reports for multiple cities:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="../reference/create_bulk.html">create_bulk</a></span>(<span class="dt">cities =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Alba Iulia"</span>, <span class="st">"Sibiu"</span>, <span class="st">"Cluj-Napoca"</span>), <span class="dt">country =</span> <span class="st">"Romania"</span>)</a></code></pre></div>
+<p>This command creates html files for each city inside the folder <code>html/country</code></p>
+<p>It is strongly advised to manually check and fix the automatic categorisation city by city, as there are almost always a few mistakes.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="../reference/fix_street_names.html">fix_street_names</a></span>(<span class="dt">city =</span> <span class="st">"Sibiu"</span>, <span class="dt">country =</span> <span class="st">"Romania"</span>)</a></code></pre></div>
+<p>Afterwards, you should delete the previously created html files, and re-run the <code><a href="../reference/create_bulk.html">create_bulk()</a></code> command.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Giorgio Comai <br><small class="roles"> Maintainer, author </small>  </li>
-</ul>
-</div>
-
       </div>
 
 </div>

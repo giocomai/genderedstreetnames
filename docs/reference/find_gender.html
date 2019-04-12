@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Starts a Shiny app that facilitates fixing categorisation — Fix_street_names • genderedstreetnames</title>
+<title>Find if a string refers to a person, and if so, finds gender by searching Wikidata — find_gender • genderedstreetnames</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Starts a Shiny app that facilitates fixing categorisation — Fix_street_names" />
+<meta property="og:title" content="Find if a string refers to a person, and if so, finds gender by searching Wikidata — find_gender" />
 
-<meta property="og:description" content="Starts a Shiny app that facilitates fixing categorisation" />
+<meta property="og:description" content="Find if a string refers to a person, and if so, finds gender by searching Wikidata" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">genderedstreetnames</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9001</span>
       </span>
     </div>
 
@@ -109,43 +109,78 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Starts a Shiny app that facilitates fixing categorisation</h1>
+    <h1>Find if a string refers to a person, and if so, finds gender by searching Wikidata</h1>
     
-    <div class="hidden name"><code>Fix_street_names.Rd</code></div>
+    <div class="hidden name"><code>find_gender.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Starts a Shiny app that facilitates fixing categorisation</p>
+    <p>Find if a string refers to a person, and if so, finds gender by searching Wikidata</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>Fix_street_names</span>(<span class='no'>city</span>, <span class='no'>country</span>)</pre>
+    <pre class="usage"><span class='fu'>find_gender</span>(<span class='no'>search</span>, <span class='kw'>language</span> <span class='kw'>=</span> <span class='st'>"en"</span>, <span class='kw'>description_language</span> <span class='kw'>=</span> <span class='st'>"en"</span>,
+  <span class='kw'>cache</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>wait</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>only_cached</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>exclude_without_uppercase</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>city</th>
-      <td><p>The name of a city/municipality.</p></td>
+      <th>search</th>
+      <td><p>The query to be searched.</p></td>
     </tr>
     <tr>
-      <th>country</th>
-      <td><p>The name of the country. Requested to ensure correct identification of city.</p></td>
+      <th>language</th>
+      <td><p>Two letters language codes to be passed to WikiData to determine search results; it works similarly as looking in the corresponding version of Wikipedia.</p></td>
+    </tr>
+    <tr>
+      <th>description_language</th>
+      <td><p>The language in which preferably to return the description as a two letter code. If not available, defaults to English. If English is not available, defaults to the language used to search in Wikidata. If not available, it returns NA.</p></td>
+    </tr>
+    <tr>
+      <th>cache</th>
+      <td><p>Logical, defaults to TRUE. IF TRUE, it stores data on the search string and the resulting Wikidata object. Data are stored inside a `wikidata` folder (if it does not exist, it is automatically created).</p></td>
+    </tr>
+    <tr>
+      <th>wait</th>
+      <td><p>Numeric, defaults to 0.1. Waiting time between queries, relevant when making a large number of queries.</p></td>
+    </tr>
+    <tr>
+      <th>only_cached</th>
+      <td><p>Logical, defaults to FALSE. If TRUE, it only uses locally cached information.</p></td>
+    </tr>
+    <tr>
+      <th>exclude_without_uppercase</th>
+      <td><p>Logical, degaults to TRUE. If the search string does not include any upper case letter, then assume it's not a person.</p></td>
+    </tr>
+    <tr>
+      <th>quietly</th>
+      <td><p>Logical, defaults to FALSE. If TRUE, no warning message appears when no relevent Wikidata entry is found.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A data.frame (a tibble) with one row and four columns: Query, Gender, Description, and WikidataID</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='co'># NOT RUN {</span>
-<span class='fu'>Fix_street_names</span>()
-<span class='co'># }</span></pre>
+    <pre class="examples"><div class='input'>
+<span class='fu'>find_gender</span>(<span class='kw'>search</span> <span class='kw'>=</span> <span class='st'>"Garibaldi"</span>, <span class='kw'>language</span> <span class='kw'>=</span> <span class='st'>"it"</span>)</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 1 x 4</span><span>
+#&gt;   Query     Gender Description                    WikidataID
+#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                          </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>     
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> Garibaldi male   Italian general and politician Q539      </div><div class='input'>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#value">Value</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

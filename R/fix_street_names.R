@@ -9,10 +9,10 @@
 #' 
 #' @examples
 #' \dontrun{
-#' Fix_street_names()
+#' fix_street_names()
 #' }
 
-Fix_street_names <- function(city, country) {
+fix_street_names <- function(city, country) {
   if (requireNamespace("shiny", quietly = TRUE)==FALSE) {
     stop("You need to install the `shiny` package with `install.packages('shiny')` to use this function.")
   }

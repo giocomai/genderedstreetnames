@@ -204,7 +204,9 @@ saveRDS(object = city_roads_gender, file = file.path("data", "gendered_street_na
 ```{r eval=FALSE}
 fix_street_names(city = "Sibiu", country = "Romania")
 ```
+Here is how the interface looks:
 
+![screenshot of fix_street_names shiny app](fix_street_names_screenshot.png)
 
 Fixed what was not right?
 

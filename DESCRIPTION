@@ -1,6 +1,6 @@
 Package: genderedstreetnames
 Title: genderedstreetnames
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: person('Giorgio', 'Comai', email = 'g@giorgiocomai.eu', role = c('cre', 'aut'))
 Description: Automatically find the gender of street names, manually fix what the automatic part got wrong.
 License: GPL-3
@@ -18,8 +18,7 @@ Imports:
     osmdata,
     tmap,
     usethis,
-    fs,
-    magrittr
+    fs
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1

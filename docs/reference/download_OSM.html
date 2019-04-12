@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • genderedstreetnames</title>
+<title>Download OSM data for whole countries. — download_OSM • genderedstreetnames</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Download OSM data for whole countries. — download_OSM" />
+
+<meta property="og:description" content="Download OSM data for whole countries." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -104,102 +107,54 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Download OSM data for whole countries.</h1>
+    
+    <div class="hidden name"><code>download_OSM.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Download OSM data for whole countries.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="create_bulk.html">create_bulk()</a></code> </p>
-        </td>
-        <td><p>Creates html pages with maps and basic stats for multiple cities</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="create_city_boundary_id_combo.html">create_city_boundary_id_combo()</a></code> </p>
-        </td>
-        <td><p>Create a city/id combination for proper caching</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="download_OSM.html">download_OSM()</a></code> </p>
-        </td>
-        <td><p>Download OSM data for whole countries.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="extract_roads.html">extract_roads()</a></code> </p>
-        </td>
-        <td><p>Extract shape files of roads from previously downloaded</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="find_gender.html">find_gender()</a></code> </p>
-        </td>
-        <td><p>Find if a string refers to a person, and if so, finds gender by searching Wikidata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fix_street_names.html">fix_street_names()</a></code> </p>
-        </td>
-        <td><p>Starts a Shiny app that facilitates fixing categorisation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_boundary_by_id.html">get_boundary_by_id()</a></code> </p>
-        </td>
-        <td><p>Get boundary by id</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_city_boundaries.html">get_city_boundaries()</a></code> </p>
-        </td>
-        <td><p>Get city boundaries</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remove_first_word.html">remove_first_word()</a></code> </p>
-        </td>
-        <td><p>Find if a string refers to a person, and if so, finds gender by searching Wikidata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="run_app.html">run_app()</a></code> </p>
-        </td>
-        <td><p>Run the Shiny Application</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="subset_roads.html">subset_roads()</a></code> </p>
-        </td>
-        <td><p>Keep only roads within a given boundary.</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>download_OSM</span>(<span class='no'>countries</span>, <span class='kw'>continent</span> <span class='kw'>=</span> <span class='st'>"Europe"</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>countries</th>
+      <td><p>One or more country names. For details on the country names see http://download.geofabrik.de/</p></td>
+    </tr>
+    <tr>
+      <th>continent</th>
+      <td><p>Defaults to `Europe`. Available options are: `africa`, `asia`, `australia-oceania`, `central-america`, `europe`, `north-america`, `south-america`. Only one continent at a time can be chosen.</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Used only for its side effects (downloads osm data).</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='fu'>download_OSM</span>(<span class='kw'>search</span> <span class='kw'>=</span> <span class='st'>"Romania"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in download_OSM(search = "Romania"): unused argument (search = "Romania")</span></div><div class='input'>
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 
