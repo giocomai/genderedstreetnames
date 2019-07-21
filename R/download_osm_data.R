@@ -121,8 +121,8 @@ extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
 #' 
 #' @param city The name of a city/municipality.
 #' @param country The name of the country. Requested to ensure correct identification of city. 
-#' @param administrative Defaults to NULL. If TRUE, filters only boundaries recorded as administrative. For more information, see: https://wiki.openstreetmap.org/wiki/Tag%3aboundary=administrative
-#' @param admin_level Defaults to 6. For more information see: https://wiki.openstreetmap.org/wiki/Tag:boundary%3Dadministrative#10_admin_level_values_for_specific_countries
+#' @param administrative Defaults to NULL. If TRUE, filters only boundaries recorded as administrative. For more information, see: https://wiki.openstreetmap.org/wiki/Tag\%3aboundary=administrative
+#' @param admin_level Defaults to 6. For more information see: https://wiki.openstreetmap.org/wiki/Tag:boundary\%3Dadministrative#10_admin_level_values_for_specific_countries
 #' @param cache Logical, defaults to TRUE. If TRUE, stores data in local subfolder data/cities/country_name/city_name.rds
 #' @return An sf polygon.
 #' @examples
