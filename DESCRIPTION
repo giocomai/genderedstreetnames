@@ -18,7 +18,8 @@ Imports:
     osmdata,
     tmap,
     usethis,
-    fs
+    fs,
+    magrittr
 Remotes: 
     Thinkr-open/golem
 RoxygenNote: 6.1.1
