@@ -56,7 +56,7 @@ download_OSM <- function(countries, continent = "Europe") {
 #' @return A data.frame with geographic data (sf).
 #' @examples
 #' 
-#' extract_roads(search = "Romania")
+#' extract_roads(countries = "Romania")
 #' 
 #' @export
 #' 
@@ -116,6 +116,127 @@ extract_roads <- function(countries, export_rds = FALSE, export_csv = FALSE) {
     return(roads)
   }
 }
+
+
+#' Download OSM data for whole countries.
+#' 
+#' @param countries One or more country names. For details on the country names see http://download.geofabrik.de/ 
+#' @param continent Defaults to `Europe`. Available options are: `africa`, `asia`, `australia-oceania`, `central-america`, `europe`, `north-america`, `south-america`. Only one continent at a time can be chosen. 
+#' @return Used only for its side effects (downloads osm data).
+#' @examples
+#' 
+#' download_OSM(countries = "Romania")
+#' 
+#' @export
+#' 
+
+download_OSM <- function(countries, continent = "Europe") {
+  countries <- tolower(countries)
+  continent <- tolower(continent)
+  
+  dir.create(path = "data", showWarnings = FALSE)
+  dir.create(path = file.path("data", "shp_zip"), showWarnings = FALSE)
+  for (i in countries) {
+    # big countries
+    if (is.element(i, big_countries)==TRUE) {
+      dir.create(path = file.path("data", "shp_zip", i), showWarnings = FALSE)
+      links <- paste0("http://download.geofabrik.de/europe/", 
+                      xml2::read_html(x = paste0("http://download.geofabrik.de/europe/", 
+                                                 i,
+                                                 ".html")) %>% 
+                        rvest::html_nodes(xpath = paste0("//a")) %>% 
+                        xml2::xml_attr("href") %>% 
+                        stringr::str_subset(pattern = stringr::fixed(".shp.zip")))
+      filenames <- file.path("data", "shp_zip", stringr::str_extract(string = links, pattern = paste0(i, "/.*shp.zip")))
+      for (j in seq_along(links)) {
+        file_location <- filenames[j]
+        if (file.exists(file_location)==FALSE) {
+          download.file(url = links[j],
+                        destfile = file_location)
+        }
+      }
+      # small countries
+    } else {
+      file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
+      if (file.exists(file_location)==FALSE) {
+        download.file(url = paste0("http://download.geofabrik.de/", continent, "/", i, "-latest-free.shp.zip"),
+                      destfile = file_location)
+      }
+      
+    }
+    
+  }
+}
+
+#' Extract shape files of places from previously downloaded 
+#' 
+#' @param countries The query to be searched.
+#' @param export_rds Stores imported shape files as an rds file locally.
+#' @param export_csv Stores imported shape files (excluding the geographic information) as a csv file locally.
+#' @return A data.frame with geographic data (sf).
+#' @examples
+#' 
+#' extract_places(countries = "Romania")
+#' 
+#' @export
+#' 
+
+extract_places <- function(countries, export_rds = FALSE, export_csv = FALSE) {
+  dir.create(path = file.path("data", "places_shp"), showWarnings = FALSE)
+  countries <- tolower(countries)
+  
+  for (i in countries) { 
+    if (is.element(i, big_countries)==TRUE) {
+      filenames <- list.files(path = file.path("data", "shp_zip", i), pattern = "shp.zip", full.names = TRUE)
+      for (j in seq_along(filenames)) {
+        file_location <- filenames[j]
+        
+        files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
+          tibble::as_tibble() %>% 
+          dplyr::pull(Name) 
+        
+        unzip(zipfile = file_location,
+              files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "places")],
+              exdir = file.path("data",
+                                "places_shp",
+                                i,
+                                stringr::str_remove(string = filenames[j],
+                                                    pattern = stringr::fixed(paste0("data/shp_zip/", i, "/"))) %>% 
+                                  stringr::str_remove(pattern = "-latest-free.shp.zip")))
+      }
+      regions <- list.files(path = file.path("data", "shp_zip", i)) %>% stringr::str_remove(pattern = stringr::fixed("-latest-free.shp.zip"))
+      places <- purrr::map_dfr(.x = regions, .f = function(x) sf::st_read(dsn = file.path("data", "places_shp", i, x)))
+    } else {
+      file_location <- file.path("data", "shp_zip", paste0(i, "-latest-free.shp.zip"))
+      if (file.exists(file_location) == FALSE) {
+        warning(paste0("File not available. Please download the data first with `download_OSM('", i, "')`" ))
+      } else {
+        files_to_extract <- unzip(zipfile = file_location, list = TRUE) %>% 
+          tibble::as_tibble() %>% 
+          dplyr::pull(Name) 
+        unzip(zipfile = file_location,
+              files = files_to_extract[stringr::str_detect(string = files_to_extract, pattern = "places")],
+              exdir = file.path("data", "places_shp", i))
+        
+        places <- sf::st_read(dsn = file.path("data", "places_shp", i)) 
+      }
+    }
+    if (export_rds == TRUE) {
+      dir.create(path = file.path("data", "places_rds"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "places_rds", i), showWarnings = FALSE)
+      saveRDS(object = places,
+              file = file.path(file.path("data", "places_rds", paste0(i, "_places.rds"))))
+    }
+    if (export_csv == TRUE) {
+      dir.create(path = file.path("data", "places_csv"), showWarnings = FALSE)
+      dir.create(path = file.path("data", "places_csv", i), showWarnings = FALSE)
+      readr::write_csv(x = places %>% st_set_geometry(NULL),
+                       path = file.path(file.path("data", "places_csv", paste0(i, "_places.csv"))))
+    }
+    return(places)
+  }
+}
+
 
 #' Get city boundaries 
 #' 
